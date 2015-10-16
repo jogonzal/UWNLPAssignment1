@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace UWNLPAssignment1
 {
@@ -14,26 +11,81 @@ namespace UWNLPAssignment1
 
 			sb.AppendLine("=============================================");
 			sb.AppendLine("PRETTY PRINT FOR PARSING RESULT");
-			sb.AppendFormat("\tSentences:\t{0}", result.Sentences.Count);
+			sb.AppendFormat("{0}\tSentences", result.Sentences.Count);
 			sb.AppendLine();
-			sb.AppendFormat("\tWords:\t{0}", result.TotalWordCount);
+			sb.AppendFormat("{0}\tWords", result.TotalWordCount);
 			sb.AppendLine();
-			sb.AppendFormat("\tUnique words:\t{0}", result.UniqueWordCount);
+			sb.AppendFormat("{0}\tUnique words", result.UniqueWordCount);
 			sb.AppendLine();
 			sb.AppendLine("=============================================");
 
 			return sb.ToString();
 		}
 
-		public static string PrintUnigrams(this CorpusParsingResult result)
+		public static string PrettyPrintUnigrams(this CorpusParsingResult result)
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("=============================================");
 			sb.AppendLine("UNIGRAM RESULTS");
-			foreach (var word in result.UniqueWordsIndex)
+
+			for (int i = 0; i < result.UniqueWordCount; i++)
 			{
-				int occurrences = result.Unigrams[word.Value];
-				sb.AppendFormat("{0}:\t\t{1}{2}", word.Key, occurrences, Environment.NewLine);
+				int occurrences = result.Unigrams[i];
+				if (occurrences > 0)
+				{
+					string firstWord = result.GetWordForIndex(i);
+					sb.AppendFormat("{0}\t{1}{2}", occurrences, firstWord, Environment.NewLine);
+				}
+			}
+			sb.AppendLine("=============================================");
+			return sb.ToString();
+		}
+
+		public static string PrettyPrintBigrams(this CorpusParsingResult result)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("=============================================");
+			sb.AppendLine("BIGRAM RESULTS");
+			
+			for (int i = 0; i < result.UniqueWordCount; i++)
+			{
+				string firstWord = result.GetWordForIndex(i);
+				for (int j = 0; j < result.UniqueWordCount; j++)
+				{
+					int occurrences = result.Bigrams[i, j];
+					if (occurrences > 0)
+					{
+						string secondWord = result.GetWordForIndex(j);
+						sb.AppendFormat("{0}\t{1}\t{2}{3}", occurrences, firstWord, secondWord, Environment.NewLine);
+					}
+				}	
+			}
+			sb.AppendLine("=============================================");
+			return sb.ToString();
+		}
+
+		public static string PrettyPrintTrigrams(this CorpusParsingResult result)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("=============================================");
+			sb.AppendLine("TRIGRAM RESULTS");
+
+			for (int i = 0; i < result.UniqueWordCount; i++)
+			{
+				string firstWord = result.GetWordForIndex(i);
+				for (int j = 0; j < result.UniqueWordCount; j++)
+				{
+					string secondWord = result.GetWordForIndex(j);
+					for (int k = 0; k < result.UniqueWordCount; k++)
+					{
+						int occurrences = result.Trigrams[i, j, k];
+						if (occurrences > 0)
+						{
+							string thirdWord = result.GetWordForIndex(k);
+							sb.AppendFormat("{0}\t{1}\t{2}\t{3}{4}", occurrences, firstWord, secondWord, thirdWord, Environment.NewLine);
+						}
+					}
+				}
 			}
 			sb.AppendLine("=============================================");
 			return sb.ToString();

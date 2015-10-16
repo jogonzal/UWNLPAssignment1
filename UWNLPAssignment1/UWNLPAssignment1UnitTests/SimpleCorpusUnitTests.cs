@@ -18,13 +18,23 @@ namespace UWNLPAssignment1UnitTests
 			result.UniqueWordCount.Should().Be(7);
 			int indexFor4 = result.UniqueWordsIndex["4"];
 			result.Unigrams[indexFor4].Should().Be(3);
+
+			VerifyDictionaryArrayAreInSync(result);
+		}
+
+		private void VerifyDictionaryArrayAreInSync(CorpusParsingResult result)
+		{
+			foreach (var word in result.UniqueWordsIndex)
+			{
+				result.GetWordForIndex(word.Value).Should().Be(word.Key);
+			}
 		}
 
 		[TestMethod]
 		public void SimpleSentenceCorpus_AllStatsObtained()
 		{
 			// Act
-			CorpusParsingResult result = CorpsParsing.ParseCorpus("The dog is pretty. The dog is cool.");
+			CorpusParsingResult result = CorpsParsing.ParseCorpus(Corpus.TwoDogSentences);
 
 			// Verify
 			result.Sentences.Should().HaveCount(2);
@@ -55,6 +65,8 @@ namespace UWNLPAssignment1UnitTests
 			result.Trigrams[indexForThe, indexForDog, indexForIs].Should().Be(2);
 			result.Trigrams[indexForIs, indexForCool, indexForStop].Should().Be(1);
 			result.Trigrams[indexForPretty, indexForIs, indexForDog].Should().Be(0);
+
+			VerifyDictionaryArrayAreInSync(result);
 		}
 	}
 }
