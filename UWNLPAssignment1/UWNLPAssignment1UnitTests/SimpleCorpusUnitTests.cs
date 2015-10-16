@@ -11,7 +11,7 @@ namespace UWNLPAssignment1UnitTests
 		public void ParseNumberCorpus_AllStatsObtained()
 		{
 			// Act
-			CorpusParsingResult result = CorpsParsing.ParseCorpus(Corpus.SmallNumberSentences);
+			CorpusParsingResult result = CorpusParsing.ParseCorpus(SampleCorpus.SmallNumberSentences);
 
 			// Verify
 			result.Sentences.Should().HaveCount(5);
@@ -34,7 +34,7 @@ namespace UWNLPAssignment1UnitTests
 		public void SimpleSentenceCorpus_AllStatsObtained()
 		{
 			// Act
-			CorpusParsingResult result = CorpsParsing.ParseCorpus(Corpus.TwoDogSentences);
+			CorpusParsingResult result = CorpusParsing.ParseCorpus(SampleCorpus.TwoDogSentences);
 
 			// Verify
 			result.Sentences.Should().HaveCount(2);
