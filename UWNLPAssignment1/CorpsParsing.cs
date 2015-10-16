@@ -5,9 +5,20 @@ namespace UWNLPAssignment1
 {
 	public class CorpusParsingResult
 	{
+		public CorpusParsingResult(Dictionary<string, int> uniqueWordsIndex, string[] indexToWord)
+		{
+			UniqueWordsIndex = uniqueWordsIndex;
+			IndexToWord = indexToWord;
+		}
+
 		public string GetWordForIndex(int i)
 		{
 			return IndexToWord[i];
+		}
+
+		public int GetIndexForWord(string i)
+		{
+			return UniqueWordsIndex[i];
 		}
 
 		public List<Sentence> Sentences { get; set; }
@@ -24,7 +35,7 @@ namespace UWNLPAssignment1
 
 		public int TotalWordCount { get; set; }
 
-		public string[] IndexToWord { get; set; }
+		private string[] IndexToWord { get; set; }
 	}
 
 	public static class CorpsParsing
@@ -126,16 +137,14 @@ namespace UWNLPAssignment1
 				indexToWord[word.Value] = word.Key;
 			}
 
-			return new CorpusParsingResult()
+			return new CorpusParsingResult(uniqueWordsIndex, indexToWord)
 			{
 				Sentences = sentences,
-				UniqueWordsIndex = uniqueWordsIndex,
 				Unigrams = unigrams,
 				TotalWordCount = totalWordCount,
 				UniqueWordCount = uniqueWordCount,
 				Bigrams = bigrams,
 				Trigrams = trigrams,
-				IndexToWord = indexToWord
 			};
 		}
 	}

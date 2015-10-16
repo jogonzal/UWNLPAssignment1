@@ -16,7 +16,7 @@ namespace UWNLPAssignment1UnitTests
 			// Verify
 			result.Sentences.Should().HaveCount(5);
 			result.UniqueWordCount.Should().Be(7);
-			int indexFor4 = result.UniqueWordsIndex["4"];
+			int indexFor4 = result.GetIndexForWord("4");
 			result.Unigrams[indexFor4].Should().Be(3);
 
 			VerifyDictionaryArrayAreInSync(result);
@@ -39,12 +39,12 @@ namespace UWNLPAssignment1UnitTests
 			// Verify
 			result.Sentences.Should().HaveCount(2);
 			result.UniqueWordCount.Should().Be(6);
-			int indexForThe = result.UniqueWordsIndex["the"];
-			int indexForDog = result.UniqueWordsIndex["dog"];
-			int indexForStop = result.UniqueWordsIndex[Constants.Stop];
-			int indexForPretty = result.UniqueWordsIndex["pretty"];
-			int indexForIs = result.UniqueWordsIndex["is"];
-			int indexForCool = result.UniqueWordsIndex["cool"];
+			int indexForThe = result.GetIndexForWord("the");
+			int indexForDog = result.GetIndexForWord("dog");
+			int indexForStop = result.GetIndexForWord(Constants.Stop);
+			int indexForPretty = result.GetIndexForWord("pretty");
+			int indexForIs = result.GetIndexForWord("is");
+			int indexForCool = result.GetIndexForWord("cool");
 
 			// Unigrams
 			result.Unigrams[indexForDog].Should().Be(2);
