@@ -5,37 +5,49 @@ namespace UWNLPAssignment1
 {
 	public class CorpusParsingResult
 	{
-		public CorpusParsingResult(Dictionary<string, int> uniqueWordsIndex, string[] indexToWord)
+		public int GetCountForUnigram(string i)
 		{
-			UniqueWordsIndex = uniqueWordsIndex;
-			IndexToWord = indexToWord;
+			int result;
+			if (Unigrams.TryGetValue(i, out result))
+			{
+				return result;
+			}
+			return 0;
 		}
 
-		public string GetWordForIndex(int i)
+		public int GetCountForBigram(string i, string j)
 		{
-			return IndexToWord[i];
+			int result;
+			if (Bigrams.TryGetValue(new Tuple<string, string>(i, j), out result))
+			{
+				return result;
+			}
+			return 0;
 		}
 
-		public int GetIndexForWord(string i)
+		public int GetCountForTrigram(string i, string j, string k)
 		{
-			return UniqueWordsIndex[i];
+			int result;
+			if (Trigrams.TryGetValue(new Tuple<string, string, string>(i, j, k), out result))
+			{
+				return result;
+			}
+			return 0;
 		}
 
 		public List<Sentence> Sentences { get; set; }
 
-		public int[,,] Trigrams { get; set; }
+		public Dictionary<Tuple<string, string, string>, int> Trigrams { get; set; }
 
-		public int[,] Bigrams { get; set; }
+		public Dictionary<Tuple<string, string>, int> Bigrams { get; set; }
 
-		public int[] Unigrams { get; set; }
+		public Dictionary<string, int> Unigrams { get; set; }
 
-		public Dictionary<string, int> UniqueWordsIndex { get; set; }
+		public HashSet<string> UniqueWords { get; set; }
 
 		public int UniqueWordCount { get; set; }
 
 		public int TotalWordCount { get; set; }
-
-		private string[] IndexToWord { get; set; }
 	}
 
 	public static class CorpusParsing
@@ -45,13 +57,14 @@ namespace UWNLPAssignment1
 			// Make everything lowercase
 			corpus = corpus.ToLowerInvariant();
 
-			Dictionary<string, int> uniqueWordsIndex = new Dictionary<string, int>();
+			HashSet<string> uniqueWords = new HashSet<string>();
 			String[] sentenceStrings = corpus.Split(new []{'.', '\n', '\t'}, StringSplitOptions.RemoveEmptyEntries);
 			List<Sentence> sentences = new List<Sentence>(sentenceStrings.Length);
 			int uniqueWordCount = 0, totalWordCount = 0;
 
 			// Add STOP to unique words
-			uniqueWordsIndex.Add(Constants.Stop, uniqueWordCount++);
+			uniqueWords.Add(Constants.Stop);
+			uniqueWordCount++;
 
 			foreach (var sentenceString in sentenceStrings)
 			{
@@ -63,9 +76,10 @@ namespace UWNLPAssignment1
 					foreach (var word in words)
 					{
 						totalWordCount++;
-						if (!uniqueWordsIndex.ContainsKey(word))
+						if (!uniqueWords.Contains(word))
 						{
-							uniqueWordsIndex.Add(word, uniqueWordCount++);
+							uniqueWords.Add(word);
+							uniqueWordCount++;
 						}
 					}
 
@@ -79,14 +93,14 @@ namespace UWNLPAssignment1
 				}
 			}
 
-			// Create one array for the uni index
-			int[] unigrams = new int[uniqueWordCount];
-
 			// Create one bi-dimensional array for bigrams
-			int[,] bigrams = new int[uniqueWordCount , uniqueWordCount];
+			var unigrams = new Dictionary<string, int>();
+	
+			// Create one bi-dimensional array for bigrams
+			var bigrams = new Dictionary<Tuple<string, string>, int>();
 
 			// Create one tri-dimensional array for the trigram
-			int[,,] trigrams = new int[uniqueWordCount, uniqueWordCount, uniqueWordCount];
+			var trigrams = new Dictionary<Tuple<string, string, string>, int>();
 
 			// Pass through all sentences and through all words, populating unigram
 			foreach (var sentence in sentences)
@@ -108,20 +122,20 @@ namespace UWNLPAssignment1
 					}
 
 					// Unigram
-					int wordIndex = uniqueWordsIndex[word];
-					unigrams[wordIndex]++;
+					var unigramKey = word;
+					unigrams[unigramKey] = unigrams.ContainsKey(unigramKey) ? unigrams[unigramKey] + 1 : 1;
 
 					if (previousWord != null)
 					{
 						// Bigram
-						int previousWordIndex = uniqueWordsIndex[previousWord];
-						bigrams[previousWordIndex, wordIndex]++;
+						var bigramKey = new Tuple<string, string>(previousWord, word);
+						bigrams[bigramKey] = bigrams.ContainsKey(bigramKey) ? bigrams[bigramKey] + 1 : 1;
 
 						if (previousPreviousWord != null)
 						{
 							// Trigram
-							int previousPreviousWordIndex = uniqueWordsIndex[previousPreviousWord];
-							trigrams[previousPreviousWordIndex, previousWordIndex, wordIndex]++;
+							var trigramKey = new Tuple<string, string, string>(previousPreviousWord, previousWord, word);
+							trigrams[trigramKey] = trigrams.ContainsKey(trigramKey) ? trigrams[trigramKey] + 1 : 1;
 						}
 					}
 
@@ -131,13 +145,7 @@ namespace UWNLPAssignment1
 				}
 			}
 
-			string[] indexToWord = new string[uniqueWordCount];
-			foreach (var word in uniqueWordsIndex)
-			{
-				indexToWord[word.Value] = word.Key;
-			}
-
-			return new CorpusParsingResult(uniqueWordsIndex, indexToWord)
+			return new CorpusParsingResult()
 			{
 				Sentences = sentences,
 				Unigrams = unigrams,
@@ -145,6 +153,7 @@ namespace UWNLPAssignment1
 				UniqueWordCount = uniqueWordCount,
 				Bigrams = bigrams,
 				Trigrams = trigrams,
+				UniqueWords = uniqueWords
 			};
 		}
 	}

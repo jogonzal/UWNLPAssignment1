@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace UWNLPAssignment1
@@ -28,15 +29,15 @@ namespace UWNLPAssignment1
 			sb.AppendLine("=============================================");
 			sb.AppendLine("UNIGRAM RESULTS");
 
-			for (int i = 0; i < result.UniqueWordCount; i++)
+			var sortedUnigrams = result.Unigrams.OrderBy(u => u.Key);
+
+			foreach (var unigram in sortedUnigrams)
 			{
-				int occurrences = result.Unigrams[i];
-				if (occurrences > 0)
-				{
-					string firstWord = result.GetWordForIndex(i);
-					sb.AppendFormat("{0}\t{1}{2}", occurrences, firstWord, Environment.NewLine);
-				}
+				string word = unigram.Key;
+				int occurrences = unigram.Value;
+				sb.AppendFormat("{0}\t{1}{2}", occurrences, word, Environment.NewLine);
 			}
+
 			sb.AppendLine("=============================================");
 			return sb.ToString();
 		}
@@ -46,20 +47,17 @@ namespace UWNLPAssignment1
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("=============================================");
 			sb.AppendLine("BIGRAM RESULTS");
-			
-			for (int i = 0; i < result.UniqueWordCount; i++)
+
+			var sortedBigrams = result.Bigrams.OrderBy(u => u.Key.Item1);
+
+			foreach (var bigram in sortedBigrams)
 			{
-				string firstWord = result.GetWordForIndex(i);
-				for (int j = 0; j < result.UniqueWordCount; j++)
-				{
-					int occurrences = result.Bigrams[i, j];
-					if (occurrences > 0)
-					{
-						string secondWord = result.GetWordForIndex(j);
-						sb.AppendFormat("{0}\t{1}\t{2}{3}", occurrences, firstWord, secondWord, Environment.NewLine);
-					}
-				}	
+				string word = bigram.Key.Item1;
+				string word2 = bigram.Key.Item2;
+				int occurrences = bigram.Value;
+				sb.AppendFormat("{0}\t{1}\t{2}{3}", occurrences, word, word2, Environment.NewLine);
 			}
+
 			sb.AppendLine("=============================================");
 			return sb.ToString();
 		}
@@ -70,23 +68,17 @@ namespace UWNLPAssignment1
 			sb.AppendLine("=============================================");
 			sb.AppendLine("TRIGRAM RESULTS");
 
-			for (int i = 0; i < result.UniqueWordCount; i++)
+			var sortedTrigrams = result.Trigrams.OrderBy(u => u.Key.Item1);
+
+			foreach (var trigram in sortedTrigrams)
 			{
-				string firstWord = result.GetWordForIndex(i);
-				for (int j = 0; j < result.UniqueWordCount; j++)
-				{
-					string secondWord = result.GetWordForIndex(j);
-					for (int k = 0; k < result.UniqueWordCount; k++)
-					{
-						int occurrences = result.Trigrams[i, j, k];
-						if (occurrences > 0)
-						{
-							string thirdWord = result.GetWordForIndex(k);
-							sb.AppendFormat("{0}\t{1}\t{2}\t{3}{4}", occurrences, firstWord, secondWord, thirdWord, Environment.NewLine);
-						}
-					}
-				}
+				string word = trigram.Key.Item1;
+				string word2 = trigram.Key.Item2;
+				string word3 = trigram.Key.Item3;
+				int occurrences = trigram.Value;
+				sb.AppendFormat("{0}\t{1}\t{2}\t{3}{4}", occurrences, word, word2, word3, Environment.NewLine);
 			}
+
 			sb.AppendLine("=============================================");
 			return sb.ToString();
 		}

@@ -16,18 +16,7 @@ namespace UWNLPAssignment1UnitTests
 			// Verify
 			result.Sentences.Should().HaveCount(5);
 			result.UniqueWordCount.Should().Be(7);
-			int indexFor4 = result.GetIndexForWord("4");
-			result.Unigrams[indexFor4].Should().Be(3);
-
-			VerifyDictionaryArrayAreInSync(result);
-		}
-
-		private void VerifyDictionaryArrayAreInSync(CorpusParsingResult result)
-		{
-			foreach (var word in result.UniqueWordsIndex)
-			{
-				result.GetWordForIndex(word.Value).Should().Be(word.Key);
-			}
+			result.GetCountForUnigram("4").Should().Be(3);
 		}
 
 		[TestMethod]
@@ -39,34 +28,26 @@ namespace UWNLPAssignment1UnitTests
 			// Verify
 			result.Sentences.Should().HaveCount(2);
 			result.UniqueWordCount.Should().Be(6);
-			int indexForThe = result.GetIndexForWord("the");
-			int indexForDog = result.GetIndexForWord("dog");
-			int indexForStop = result.GetIndexForWord(Constants.Stop);
-			int indexForPretty = result.GetIndexForWord("pretty");
-			int indexForIs = result.GetIndexForWord("is");
-			int indexForCool = result.GetIndexForWord("cool");
 
 			// Unigrams
-			result.Unigrams[indexForDog].Should().Be(2);
-			result.Unigrams[indexForStop].Should().Be(2);
-			result.Unigrams[indexForIs].Should().Be(2);
-			result.Unigrams[indexForCool].Should().Be(1);
+			result.GetCountForUnigram("dog").Should().Be(2);
+			result.GetCountForUnigram(Constants.Stop).Should().Be(2);
+			result.GetCountForUnigram("is").Should().Be(2);
+			result.GetCountForUnigram("cool").Should().Be(1);
 
 			// Bigrams
-			result.Bigrams[indexForDog, indexForIs].Should().Be(2);
-			result.Bigrams[indexForIs, indexForPretty].Should().Be(1);
-			result.Bigrams[indexForIs, indexForCool].Should().Be(1);
-			result.Bigrams[indexForIs, indexForStop].Should().Be(0);
-			result.Bigrams[indexForPretty, indexForStop].Should().Be(1);
-			result.Bigrams[indexForPretty, indexForDog].Should().Be(0);
+			result.GetCountForBigram("dog", "is").Should().Be(2);
+			result.GetCountForBigram("is", "pretty").Should().Be(1);
+			result.GetCountForBigram("is", "cool").Should().Be(1);
+			result.GetCountForBigram("is", Constants.Stop).Should().Be(0);
+			result.GetCountForBigram("pretty", Constants.Stop).Should().Be(1);
+			result.GetCountForBigram("pretty", "dog").Should().Be(0);
 
 			// Trigrams
-			result.Trigrams[indexForDog, indexForIs, indexForCool].Should().Be(1);
-			result.Trigrams[indexForThe, indexForDog, indexForIs].Should().Be(2);
-			result.Trigrams[indexForIs, indexForCool, indexForStop].Should().Be(1);
-			result.Trigrams[indexForPretty, indexForIs, indexForDog].Should().Be(0);
-
-			VerifyDictionaryArrayAreInSync(result);
+			result.GetCountForTrigram("dog", "is", "cool").Should().Be(1);
+			result.GetCountForTrigram("the", "dog", "is").Should().Be(2);
+			result.GetCountForTrigram("is", "cool", Constants.Stop).Should().Be(1);
+			result.GetCountForTrigram("pretty", "is", "dog").Should().Be(0);
 		}
 	}
 }
