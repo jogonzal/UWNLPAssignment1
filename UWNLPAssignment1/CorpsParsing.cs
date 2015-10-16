@@ -14,16 +14,27 @@ namespace UWNLPAssignment1
 		public int[] Unigrams { get; set; }
 
 		public Dictionary<string, int> UniqueWordsIndex { get; set; }
+
+		public int UniqueWordCount { get; set; }
+
+		public int TotalWordCount { get; set; }
 	}
 
 	public static class CorpsParsing
 	{
 		public static CorpusParsingResult ParseCorpus(string corpus)
 		{
+			// Make everything lowercase
+			corpus = corpus.ToLowerInvariant();
+
 			Dictionary<string, int> uniqueWordsIndex = new Dictionary<string, int>();
 			String[] sentenceStrings = corpus.Split(new []{'.', '\n', '\t'}, StringSplitOptions.RemoveEmptyEntries);
 			List<Sentence> sentences = new List<Sentence>(sentenceStrings.Length);
-			int countOfWords = 0;
+			int uniqueWordCount = 0, totalWordCount = 0;
+
+			// Add STOP to unique words
+			uniqueWordsIndex.Add(Constants.Stop, uniqueWordCount++);
+
 			foreach (var sentenceString in sentenceStrings)
 			{
 				var words = sentenceString.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -33,11 +44,15 @@ namespace UWNLPAssignment1
 					// Add the word to the index so we can number it later
 					foreach (var word in words)
 					{
+						totalWordCount++;
 						if (!uniqueWordsIndex.ContainsKey(word))
 						{
-							uniqueWordsIndex.Add(word, countOfWords++);
+							uniqueWordsIndex.Add(word, uniqueWordCount++);
 						}
 					}
+
+					// Don't forget about STOP!
+					totalWordCount++;
 
 					sentences.Add(new Sentence()
 						{
@@ -47,15 +62,54 @@ namespace UWNLPAssignment1
 			}
 
 			// Create one array for the uni index
-			int[] unigrams = new int[countOfWords];
+			int[] unigrams = new int[uniqueWordCount];
+
+			// Create one bi-dimensional array for bigrams
+			int[,] bigrams = new int[uniqueWordCount , uniqueWordCount];
+
+			// Create one tri-dimensional array for the trigram
+			int[,,] trigrams = new int[uniqueWordCount, uniqueWordCount, uniqueWordCount];
 
 			// Pass through all sentences and through all words, populating unigram
 			foreach (var sentence in sentences)
 			{
-				foreach (var word in sentence.Words)
+				string previousWord = null;
+				string previousPreviousWord = null;
+
+				for (int i = 0; i < sentence.Words.Length + 1; i++)
 				{
+					// Consider STOP
+					string word;
+					if (i == sentence.Words.Length)
+					{
+						word = Constants.Stop;
+					}
+					else
+					{
+						word = sentence.Words[i];	
+					}
+
+					// Unigram
 					int wordIndex = uniqueWordsIndex[word];
 					unigrams[wordIndex]++;
+
+					if (previousWord != null)
+					{
+						// Bigram
+						int previousWordIndex = uniqueWordsIndex[previousWord];
+						bigrams[previousWordIndex, wordIndex]++;
+
+						if (previousPreviousWord != null)
+						{
+							// Trigram
+							int previousPreviousWordIndex = uniqueWordsIndex[previousPreviousWord];
+							trigrams[previousPreviousWordIndex, previousWordIndex, wordIndex]++;
+						}
+					}
+
+					// Move to next
+					previousPreviousWord = previousWord;
+					previousWord = word;
 				}
 			}
 
@@ -63,7 +117,11 @@ namespace UWNLPAssignment1
 			{
 				Sentences = sentences,
 				UniqueWordsIndex = uniqueWordsIndex,
-				Unigrams = unigrams
+				Unigrams = unigrams,
+				TotalWordCount = totalWordCount,
+				UniqueWordCount = uniqueWordCount,
+				Bigrams = bigrams,
+				Trigrams = trigrams
 			};
 		}
 	}
