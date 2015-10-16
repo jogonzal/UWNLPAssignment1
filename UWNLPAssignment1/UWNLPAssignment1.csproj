@@ -61,6 +61,7 @@
     <None Include="corpora\reuters.readme">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="hw1.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="corpora\brown.txt">
