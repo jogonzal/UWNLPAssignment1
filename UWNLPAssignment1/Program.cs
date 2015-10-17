@@ -13,6 +13,7 @@ namespace UWNLPAssignment1
 			Console.WriteLine(result.PrettyPrintUnigrams());
 			Console.WriteLine(result.PrettyPrintBigrams());
 			Console.WriteLine(result.PrettyPrintTrigrams());
+
 			Console.ReadLine();
 		}
 	}

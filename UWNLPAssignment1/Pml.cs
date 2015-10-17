@@ -6,22 +6,23 @@
 		{
 			int countForUnigram = result.GetCountForUnigram(word);
 
-			return 1.0*countForUnigram/result.TotalUnigrams;
+			return 1.0 * countForUnigram/result.TotalUnigrams;
 		}
 
-		public static double Pml(this CorpusParsingResult result, string word, string word2)
+		public static double Pml(this CorpusParsingResult result, string wordminus1, string word)
 		{
-			int countForBigram = result.GetCountForBigram(word, word2);
-			int totalCountForUnigrams = result.TotalBigrams;
+			int countForBigram = result.GetCountForBigram(wordminus1, word);
+			int countForUnigram = result.GetCountForUnigram(wordminus1);
 
-			return 1.0 * countForBigram / totalCountForUnigrams;
+			return 1.0 * countForBigram / countForUnigram;
 		}
 
-		public static double Pml(this CorpusParsingResult result, string word, string word2, string word3)
+		public static double Pml(this CorpusParsingResult result, string wordminus2, string wordminus1, string word)
 		{
-			int countForTrigram = result.GetCountForTrigram(word, word2, word3);
+			int countForTrigram = result.GetCountForTrigram(wordminus2, wordminus1, word);
+			int countForBigram = result.GetCountForBigram(wordminus2, wordminus1);
 
-			return 1.0 * countForTrigram / result.TotalTrigrams;
+			return 1.0 * countForTrigram / countForBigram;
 		}
 	}
 }

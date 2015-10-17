@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UWNLPAssignment1;
 
@@ -54,10 +55,32 @@ namespace UWNLPAssignment1UnitTests
 			result.TotalBigrams.Should().Be(8);
 			result.TotalTrigrams.Should().Be(6);
 
-			// PML
-			result.Pml("dog").Should().Be(1.0 * 2 / 10);
-			result.Pml("dog", "is").Should().Be(1.0 * 2 / 8);
-			result.Pml("dog", "is", "cool").Should().Be(1.0*1/6);
-		}
+			// Verify the function for PML is well defined for trigrams that exist
+			foreach (var wordminus2 in result.UniqueWords)
+			{
+				foreach (var wordminus1 in result.UniqueWords)
+				{
+					// Don't try to verify PML validity for functions that aren't defined (have count 0)
+					if (result.GetCountForBigram(wordminus2, wordminus1) > 0)
+					{
+						bool hasAtLeastOneTrigram = false;
+						double total = 0;
+						foreach (var word in result.UniqueWords)
+						{
+							double pml = result.Pml(wordminus2, wordminus1, word);
+							if (pml > 0)
+							{
+								total += pml;
+								hasAtLeastOneTrigram = true;
+							}
+						}
+						if (hasAtLeastOneTrigram)
+						{
+							total.Should().Be(1.0);
+						}
+					}
+				}
+			}
+		} 
 	}
 }
