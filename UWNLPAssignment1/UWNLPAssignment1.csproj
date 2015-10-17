@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="CorpusParsing.cs" />
+    <Compile Include="Pml.cs" />
     <Compile Include="ReadCorpusFile.cs" />
     <Compile Include="SampleCorpus.cs" />
     <Compile Include="PrintExtensions.cs" />

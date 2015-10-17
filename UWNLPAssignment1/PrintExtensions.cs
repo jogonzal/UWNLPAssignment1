@@ -18,6 +18,12 @@ namespace UWNLPAssignment1
 			sb.AppendLine();
 			sb.AppendFormat("{0}\tUnique words", result.UniqueWordCount);
 			sb.AppendLine();
+			sb.AppendFormat("{0}\tUnigrams", result.TotalUnigrams);
+			sb.AppendLine();
+			sb.AppendFormat("{0}\tBigrams", result.TotalBigrams);
+			sb.AppendLine();
+			sb.AppendFormat("{0}\tTrigrams", result.TotalTrigrams);
+			sb.AppendLine();
 			sb.AppendLine("=============================================");
 
 			return sb.ToString();
@@ -27,7 +33,7 @@ namespace UWNLPAssignment1
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("=============================================");
-			sb.AppendLine("UNIGRAM RESULTS");
+			sb.AppendFormat("UNIGRAM RESULTS ({0}){1}", result.TotalUnigrams, Environment.NewLine);
 
 			var sortedUnigrams = result.Unigrams.OrderBy(u => u.Key);
 
@@ -46,7 +52,7 @@ namespace UWNLPAssignment1
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("=============================================");
-			sb.AppendLine("BIGRAM RESULTS");
+			sb.AppendFormat("BIGRAM RESULTS ({0}){1}", result.TotalBigrams, Environment.NewLine);
 
 			var sortedBigrams = result.Bigrams.OrderBy(u => u.Key.Item1);
 
@@ -66,7 +72,7 @@ namespace UWNLPAssignment1
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("=============================================");
-			sb.AppendLine("TRIGRAM RESULTS");
+			sb.AppendFormat("TRIGRAM RESULTS ({0}){1}", result.TotalTrigrams, Environment.NewLine);
 
 			var sortedTrigrams = result.Trigrams.OrderBy(u => u.Key.Item1);
 

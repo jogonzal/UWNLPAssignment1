@@ -48,6 +48,16 @@ namespace UWNLPAssignment1UnitTests
 			result.GetCountForTrigram("the", "dog", "is").Should().Be(2);
 			result.GetCountForTrigram("is", "cool", Constants.Stop).Should().Be(1);
 			result.GetCountForTrigram("pretty", "is", "dog").Should().Be(0);
+
+			// Count
+			result.TotalUnigrams.Should().Be(10);
+			result.TotalBigrams.Should().Be(8);
+			result.TotalTrigrams.Should().Be(6);
+
+			// PML
+			result.Pml("dog").Should().Be(1.0 * 2 / 10);
+			result.Pml("dog", "is").Should().Be(1.0 * 2 / 8);
+			result.Pml("dog", "is", "cool").Should().Be(1.0*1/6);
 		}
 	}
 }

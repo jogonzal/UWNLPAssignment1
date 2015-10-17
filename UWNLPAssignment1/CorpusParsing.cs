@@ -48,6 +48,12 @@ namespace UWNLPAssignment1
 		public int UniqueWordCount { get; set; }
 
 		public int TotalWordCount { get; set; }
+
+		public int TotalBigrams { get; set; }
+
+		public int TotalUnigrams { get; set; }
+
+		public int TotalTrigrams { get; set; }
 	}
 
 	public static class CorpusParsing
@@ -93,6 +99,9 @@ namespace UWNLPAssignment1
 				}
 			}
 
+			// Keep track of the count of unigrams, bigrams, trigrams
+			int totalUnigrams = 0, totalBigrams = 0, totalTrigrams = 0;
+
 			// Create one bi-dimensional array for bigrams
 			var unigrams = new Dictionary<string, int>();
 	
@@ -124,18 +133,21 @@ namespace UWNLPAssignment1
 					// Unigram
 					var unigramKey = word;
 					unigrams[unigramKey] = unigrams.ContainsKey(unigramKey) ? unigrams[unigramKey] + 1 : 1;
+					totalUnigrams++;
 
 					if (previousWord != null)
 					{
 						// Bigram
 						var bigramKey = new Tuple<string, string>(previousWord, word);
 						bigrams[bigramKey] = bigrams.ContainsKey(bigramKey) ? bigrams[bigramKey] + 1 : 1;
+						totalBigrams++;
 
 						if (previousPreviousWord != null)
 						{
 							// Trigram
 							var trigramKey = new Tuple<string, string, string>(previousPreviousWord, previousWord, word);
 							trigrams[trigramKey] = trigrams.ContainsKey(trigramKey) ? trigrams[trigramKey] + 1 : 1;
+							totalTrigrams++;
 						}
 					}
 
@@ -153,7 +165,10 @@ namespace UWNLPAssignment1
 				UniqueWordCount = uniqueWordCount,
 				Bigrams = bigrams,
 				Trigrams = trigrams,
-				UniqueWords = uniqueWords
+				UniqueWords = uniqueWords,
+				TotalUnigrams = totalUnigrams,
+				TotalBigrams = totalBigrams,
+				TotalTrigrams = totalTrigrams
 			};
 		}
 	}
