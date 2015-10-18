@@ -111,7 +111,7 @@ namespace UWNLPAssignment1
 			}
 
 			totalSum = 0;
-			foreach (var wordIteration in _result.UniqueWords)
+			foreach (var wordIteration in _result.UniqueWords.Keys)
 			{
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P1)
 				{
@@ -137,7 +137,7 @@ namespace UWNLPAssignment1
 			}
 
 			totalSum = 0;
-			foreach (var wordIteration in _result.UniqueWords)
+			foreach (var wordIteration in _result.UniqueWords.Keys)
 			{
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P2)
 				{
@@ -163,7 +163,7 @@ namespace UWNLPAssignment1
 			}
 
 			totalSum = 0;
-			foreach (var wordIteration in _result.UniqueWords)
+			foreach (var wordIteration in _result.UniqueWords.Keys)
 			{
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P3)
 				{
@@ -182,7 +182,7 @@ namespace UWNLPAssignment1
 
 			double sumBelow = 0;
 			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
-			foreach (var potentialWordWithoutTrigram in _result.UniqueWords)
+			foreach (var potentialWordWithoutTrigram in _result.UniqueWords.Keys)
 			{
 				if (_result.GetCountForTrigram(wordminus2, wordminus1, potentialWordWithoutTrigram) == 0)
 				{
@@ -200,7 +200,7 @@ namespace UWNLPAssignment1
 
 			double sumBelow = 0;
 			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
-			foreach (var potentialWordWithoutBigram in _result.UniqueWords)
+			foreach (var potentialWordWithoutBigram in _result.UniqueWords.Keys)
 			{
 				if (_result.GetCountForBigram(wordminus1, potentialWordWithoutBigram) == 0)
 				{

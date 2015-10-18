@@ -8,16 +8,17 @@ namespace UWNLPAssignment1
 		{
 			ReadCorpusResult fileReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
 
-			CorpusParsingResult result = CorpusParsing.ParseCorpus(fileReadResults.Training);
-			Console.WriteLine(result.PrettyPrint());
+			CorpusParsingResult corpus = CorpusParsing.ParseCorpus(fileReadResults.Training, true);
+			Console.WriteLine(corpus.PrettyPrint());
 
 			//Console.WriteLine(result.PrettyPrintUnigrams());
 			//Console.WriteLine(result.PrettyPrintBigrams());
 			//Console.WriteLine(result.PrettyPrintTrigrams());
 
-			ILanguageModel model = new LinearModel(result);
-
-			
+			ILanguageModel model = new LinearModel(corpus);
+			var testCorpus = CorpusParsing.ParseString(fileReadResults.Evaluation);
+			double perplexity = Perplexity.CalculatePerplexity(model, corpus, testCorpus);
+			Console.WriteLine("{0}\tPerplexity", perplexity);
 
 			Console.ReadLine();
 		}

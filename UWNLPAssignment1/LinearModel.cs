@@ -29,9 +29,9 @@ namespace UWNLPAssignment1
 
 			double total = probabilityForTrigram + probabilityForBigram + probabilityForUnigram;
 
-			Debug.WriteLine("Total:{0}\tUni:\t{1}\tBig:\t{2}\tTri\t:{3}\t{4}\t{5}\t{6}",
-				total, probabilityForTrigram, probabilityForBigram, probabilityForUnigram,
-				wordminus2, wordminus1, word);
+			//Debug.WriteLine("Total:{0}\tUni:\t{1}\tBig:\t{2}\tTri\t:{3}\t{4}\t{5}\t{6}",
+			//	total, probabilityForTrigram, probabilityForBigram, probabilityForUnigram,
+			//	wordminus2, wordminus1, word);
 
 			return total;
 		}

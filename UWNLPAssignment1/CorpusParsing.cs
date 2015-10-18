@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UWNLPAssignment1
 {
@@ -7,12 +8,7 @@ namespace UWNLPAssignment1
 	{
 		public int GetCountForUnigram(string i)
 		{
-			int result;
-			if (Unigrams.TryGetValue(i, out result))
-			{
-				return result;
-			}
-			return 0;
+			return Unigrams[i];
 		}
 
 		public int GetCountForBigram(string i, string j)
@@ -43,9 +39,7 @@ namespace UWNLPAssignment1
 
 		public Dictionary<string, int> Unigrams { get; set; }
 
-		public HashSet<string> UniqueWords { get; set; }
-
-		public int UniqueWordCount { get; set; }
+		public Dictionary<string, int> UniqueWords { get; set; }
 
 		public int TotalWordCount { get; set; }
 
@@ -56,48 +50,24 @@ namespace UWNLPAssignment1
 		public int TotalTrigrams { get; set; }
 	}
 
+	public class StringParsingResult
+	{
+		public List<Sentence> Sentences { get; set; }
+
+		public int TotalWordCount { get; set; }
+
+		public Dictionary<string, int> UniqueWords { get; set; }
+	}
+
 	public static class CorpusParsing
 	{
-		public static CorpusParsingResult ParseCorpus(string corpus)
+		public static CorpusParsingResult ParseCorpus(string corpus, bool unkEnabled)
 		{
-			// Make everything lowercase
-			corpus = corpus.ToLowerInvariant();
+			StringParsingResult parsingResult = ParseString(corpus);
 
-			HashSet<string> uniqueWords = new HashSet<string>();
-			String[] sentenceStrings = corpus.Split(new []{'.', '\n', '\t'}, StringSplitOptions.RemoveEmptyEntries);
-			List<Sentence> sentences = new List<Sentence>(sentenceStrings.Length);
-			int uniqueWordCount = 0, totalWordCount = 0;
-
-			// Add START and STOP to unique words
-			uniqueWords.Add(Constants.Start);
-			uniqueWords.Add(Constants.Stop);
-			uniqueWordCount+=2;
-
-			foreach (var sentenceString in sentenceStrings)
+			if (unkEnabled)
 			{
-				var words = sentenceString.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-				if (words.Length > 0)
-				{
-					// Add the word to the index so we can number it later
-					foreach (var word in words)
-					{
-						totalWordCount++;
-						if (!uniqueWords.Contains(word))
-						{
-							uniqueWords.Add(word);
-							uniqueWordCount++;
-						}
-					}
-
-					// Don't forget about STOP AND START!
-					totalWordCount += 2;
-
-					sentences.Add(new Sentence()
-						{
-							Words = words
-						});
-				}
+				AddUnksToParsingResult(parsingResult);
 			}
 
 			// Keep track of the count of unigrams, bigrams, trigrams
@@ -113,7 +83,7 @@ namespace UWNLPAssignment1
 			var trigrams = new Dictionary<Tuple<string, string, string>, int>();
 
 			// Pass through all sentences and through all words, populating unigram
-			foreach (var sentence in sentences)
+			foreach (var sentence in parsingResult.Sentences)
 			{
 				// Consider start
 				string previousWord = Constants.Start;
@@ -134,7 +104,15 @@ namespace UWNLPAssignment1
 					}
 					else
 					{
-						word = sentence.Words[i];
+						// Get the word, or UNK if that's the case
+						if (parsingResult.UniqueWords.ContainsKey(sentence.Words[i]))
+						{
+							word = sentence.Words[i];
+						}
+						else
+						{
+							word = Constants.Unknown;
+						}
 					}
 
 					// Unigram
@@ -160,16 +138,86 @@ namespace UWNLPAssignment1
 
 			return new CorpusParsingResult()
 			{
-				Sentences = sentences,
+				Sentences = parsingResult.Sentences,
 				Unigrams = unigrams,
-				TotalWordCount = totalWordCount,
-				UniqueWordCount = uniqueWordCount,
+				TotalWordCount = parsingResult.TotalWordCount,
 				Bigrams = bigrams,
 				Trigrams = trigrams,
-				UniqueWords = uniqueWords,
+				UniqueWords = parsingResult.UniqueWords,
 				TotalUnigrams = totalUnigrams,
 				TotalBigrams = totalBigrams,
 				TotalTrigrams = totalTrigrams
+			};
+		}
+
+		private static void AddUnksToParsingResult(StringParsingResult parsingResult)
+		{
+			List<KeyValuePair<string, int>> listOfWordsWithOneOccurrence = parsingResult.UniqueWords.Where(w => w.Value == 1).ToList();
+
+			int numberOfUnksToAdd = Convert.ToInt32(listOfWordsWithOneOccurrence.Count * Configs.PercentageOfUnks);
+
+			// The way we'll make a word an UNK is we'll remove it from the known words list. BAM!
+			// We'll only remove words that appear once
+			while (numberOfUnksToAdd > 0)
+			{
+				parsingResult.UniqueWords.Remove(listOfWordsWithOneOccurrence[numberOfUnksToAdd].Key);
+				numberOfUnksToAdd--;
+			}
+
+			// Removed enough UNKs
+			// Add Unk to known words
+			parsingResult.UniqueWords.Add(Constants.Unknown, numberOfUnksToAdd);
+		}
+
+		public static StringParsingResult ParseString(string corpus)
+		{
+			// Make everything lowercase
+			corpus = corpus.ToLowerInvariant();
+
+			var uniqueWords = new Dictionary<string, int>();
+			String[] sentenceStrings = corpus.Split(new[] { '.', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+			List<Sentence> sentences = new List<Sentence>(sentenceStrings.Length);
+			int totalWordCount = 0;
+
+			// Add START and STOP to unique words
+			uniqueWords.Add(Constants.Start, 1);
+			uniqueWords.Add(Constants.Stop, 1);
+
+			foreach (var sentenceString in sentenceStrings)
+			{
+				var words = sentenceString.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+				if (words.Length > 0)
+				{
+					// Add the word to the index so we can number it later
+					foreach (var word in words)
+					{
+						totalWordCount++;
+						if (!uniqueWords.ContainsKey(word))
+						{
+							uniqueWords.Add(word, 1);
+						}
+						else
+						{
+							uniqueWords[word]++;
+						}
+					}
+
+					// Don't forget about STOP AND START!
+					totalWordCount += 2;
+
+					sentences.Add(new Sentence()
+					{
+						Words = words
+					});
+				}
+			}
+
+			return new StringParsingResult()
+			{
+				TotalWordCount = totalWordCount,
+				Sentences = sentences,
+				UniqueWords = uniqueWords
 			};
 		}
 	}

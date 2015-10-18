@@ -46,6 +46,7 @@
     <Compile Include="CorpusParsing.cs" />
     <Compile Include="ILanguageModel.cs" />
     <Compile Include="LinearModel.cs" />
+    <Compile Include="Perplexity.cs" />
     <Compile Include="Pml.cs" />
     <Compile Include="Problem1Model.cs" />
     <Compile Include="ReadCorpusFile.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sentence.cs" />
+    <Compile Include="NgramModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

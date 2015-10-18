@@ -8,7 +8,7 @@ namespace UWNLPAssignment1UnitTests
 	public class ProblemPUnitTests
 	{
 		// The dog is pretty. The dog is cool
-		private static readonly CorpusParsingResult Result = CorpusParsing.ParseCorpus(SampleCorpus.TwoDogSentences);
+		private static readonly CorpusParsingResult Result = CorpusParsing.ParseCorpus(SampleCorpus.TwoDogSentences, false);
 
 		[TestMethod]
 		public void ProblemP_DeterminePBucket()

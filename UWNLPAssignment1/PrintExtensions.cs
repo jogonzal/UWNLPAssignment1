@@ -16,7 +16,7 @@ namespace UWNLPAssignment1
 			sb.AppendLine();
 			sb.AppendFormat("{0}\tWords", result.TotalWordCount);
 			sb.AppendLine();
-			sb.AppendFormat("{0}\tUnique words", result.UniqueWordCount);
+			sb.AppendFormat("{0}\tUnique words", result.UniqueWords.Count);
 			sb.AppendLine();
 			sb.AppendFormat("{0}\tUnigrams", result.TotalUnigrams);
 			sb.AppendLine();

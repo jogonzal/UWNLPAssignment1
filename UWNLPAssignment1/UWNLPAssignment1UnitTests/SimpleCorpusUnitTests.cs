@@ -1,5 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UWNLPAssignment1;
@@ -9,19 +9,18 @@ namespace UWNLPAssignment1UnitTests
 	[TestClass]
 	public class SimpleCorpusUnitTests
 	{
-		readonly CorpusParsingResult _twoDogSentencesCorpus = CorpusParsing.ParseCorpus(SampleCorpus.TwoDogSentences);
+		readonly CorpusParsingResult _twoDogSentencesCorpus = CorpusParsing.ParseCorpus(SampleCorpus.TwoDogSentences, false);
+		readonly CorpusParsingResult _numberSentences = CorpusParsing.ParseCorpus(SampleCorpus.SmallNumberSentences, false);
+		readonly CorpusParsingResult _loremIpsum = CorpusParsing.ParseCorpus(SampleCorpus.LoremIpsum, true);
 
 		[TestMethod]
 		public void ParseNumberCorpus_AllStatsObtained()
 		{
-			// Act
-			CorpusParsingResult result = CorpusParsing.ParseCorpus(SampleCorpus.SmallNumberSentences);
-
 			// Verify
-			result.Sentences.Should().HaveCount(5);
-			result.UniqueWordCount.Should().Be(8);
-			result.GetCountForUnigram("4").Should().Be(3);
-			result.GetCountForUnigram(Constants.Start).Should().Be(5);
+			_numberSentences.Sentences.Should().HaveCount(5);
+			_numberSentences.UniqueWords.Count.Should().Be(8);
+			_numberSentences.GetCountForUnigram("4").Should().Be(3);
+			_numberSentences.GetCountForUnigram(Constants.Start).Should().Be(5);
 		}
 
 		[TestMethod]
@@ -29,7 +28,7 @@ namespace UWNLPAssignment1UnitTests
 		{
 			// Verify
 			_twoDogSentencesCorpus.Sentences.Should().HaveCount(2);
-			_twoDogSentencesCorpus.UniqueWordCount.Should().Be(7);
+			_twoDogSentencesCorpus.UniqueWords.Count.Should().Be(7);
 
 			// Unigrams
 			_twoDogSentencesCorpus.GetCountForUnigram("dog").Should().Be(2);
@@ -66,48 +65,55 @@ namespace UWNLPAssignment1UnitTests
 		public void Problem1Model_WellDefinedProbability()
 		{
 			ILanguageModel problem1Model = new Problem1Model(_twoDogSentencesCorpus);
-			TestWellDefinedProbability(problem1Model);
+			TestWellDefinedProbability(problem1Model, true);
 		}
 
 		[TestMethod]
 		public void LinearModel_WellDefinedProbability()
 		{
 			ILanguageModel linearModel = new LinearModel(_twoDogSentencesCorpus);
-			TestWellDefinedProbability(linearModel);
+			TestWellDefinedProbability(linearModel, false);
 		}
 
 		[TestMethod]
 		public void TrigramModel_WellDefinedProbability()
 		{
 			ILanguageModel linearModel = new TrigramModel(_twoDogSentencesCorpus);
-			TestWellDefinedProbability(linearModel);
+			TestWellDefinedProbability(linearModel, false);
 		}
 
 		[TestMethod]
 		public void BigramModel_WellDefinedProbability()
 		{
 			ILanguageModel linearModel = new BigramModel(_twoDogSentencesCorpus);
-			TestWellDefinedProbability(linearModel);
+			TestWellDefinedProbability(linearModel, false);
 		}
 
 		[TestMethod]
 		public void UnigramModel_WellDefinedProbability()
 		{
 			ILanguageModel linearModel = new UnigramModel(_twoDogSentencesCorpus);
-			TestWellDefinedProbability(linearModel);
+			TestWellDefinedProbability(linearModel, false);
 		}
 
-		private void TestWellDefinedProbability(ILanguageModel model)
+		[TestMethod]
+		public void UnksAddedCorrectly()
+		{
+			_loremIpsum.UniqueWords.Keys.Where(k => k == Constants.Unknown).Should().HaveCount(c => c > 0);
+			_loremIpsum.GetCountForUnigram(Constants.Unknown).Should().BeGreaterThan(0);
+		}
+
+		private void TestWellDefinedProbability(ILanguageModel model, bool testIfWellDefined)
 		{
 			// Verify the function for P is well defined for trigrams that exist
-			foreach (var wordminus2 in _twoDogSentencesCorpus.UniqueWords)
+			foreach (var wordminus2 in _twoDogSentencesCorpus.UniqueWords.Keys)
 			{
 				if (wordminus2 == Constants.Stop)
 				{
 					continue;
 				}
 
-				foreach (var wordminus1 in _twoDogSentencesCorpus.UniqueWords)
+				foreach (var wordminus1 in _twoDogSentencesCorpus.UniqueWords.Keys)
 				{
 					if (wordminus1 == Constants.Stop || (wordminus2 != Constants.Start && wordminus1 == Constants.Start))
 					{
@@ -115,7 +121,7 @@ namespace UWNLPAssignment1UnitTests
 					}
 
 					double total = 0;
-					foreach (var word in _twoDogSentencesCorpus.UniqueWords)
+					foreach (var word in _twoDogSentencesCorpus.UniqueWords.Keys)
 					{
 						double pml = model.P(wordminus2, wordminus1, word);
 						if (pml > 0)
@@ -124,6 +130,10 @@ namespace UWNLPAssignment1UnitTests
 						}
 					}
 					Debug.WriteLine("Next! Sum was {0}", total);
+					if (testIfWellDefined)
+					{
+						total.Should().Be(1);
+					}
 				}
 			}
 		}
