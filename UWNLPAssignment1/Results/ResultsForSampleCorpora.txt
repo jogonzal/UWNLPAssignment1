@@ -1,0 +1,249 @@
+﻿P2  0.1875  {{STARTTOKEN}}	{{STARTTOKEN}}	{{STARTTOKEN}}
+P3  0.046875  {{STARTTOKEN}}	{{STARTTOKEN}}	{{STOPTOKEN}}
+P1  0.625  {{STARTTOKEN}}	{{STARTTOKEN}}	the
+P3  0.046875  {{STARTTOKEN}}	{{STARTTOKEN}}	dog
+P3  0.046875  {{STARTTOKEN}}	{{STARTTOKEN}}	is
+P3  0.0234375  {{STARTTOKEN}}	{{STARTTOKEN}}	pretty
+P3  0.0234375  {{STARTTOKEN}}	{{STARTTOKEN}}	cool
+Next! Sum was 1
+P3  0.075  {{STARTTOKEN}}	the	{{STARTTOKEN}}
+P3  0.075  {{STARTTOKEN}}	the	{{STOPTOKEN}}
+P3  0.075  {{STARTTOKEN}}	the	the
+P1  0.625  {{STARTTOKEN}}	the	dog
+P3  0.075  {{STARTTOKEN}}	the	is
+P3  0.0375  {{STARTTOKEN}}	the	pretty
+P3  0.0375  {{STARTTOKEN}}	the	cool
+Next! Sum was 1
+P3  0.1  {{STARTTOKEN}}	dog	{{STARTTOKEN}}
+P3  0.1  {{STARTTOKEN}}	dog	{{STOPTOKEN}}
+P3  0.1  {{STARTTOKEN}}	dog	the
+P3  0.1  {{STARTTOKEN}}	dog	dog
+P2  0.5  {{STARTTOKEN}}	dog	is
+P3  0.05  {{STARTTOKEN}}	dog	pretty
+P3  0.05  {{STARTTOKEN}}	dog	cool
+Next! Sum was 1
+P3  0.1  {{STARTTOKEN}}	is	{{STARTTOKEN}}
+P3  0.1  {{STARTTOKEN}}	is	{{STOPTOKEN}}
+P3  0.1  {{STARTTOKEN}}	is	the
+P3  0.1  {{STARTTOKEN}}	is	dog
+P3  0.1  {{STARTTOKEN}}	is	is
+P2  0.25  {{STARTTOKEN}}	is	pretty
+P2  0.25  {{STARTTOKEN}}	is	cool
+Next! Sum was 1
+P3  0.1  {{STARTTOKEN}}	pretty	{{STARTTOKEN}}
+P2  0.5  {{STARTTOKEN}}	pretty	{{STOPTOKEN}}
+P3  0.1  {{STARTTOKEN}}	pretty	the
+P3  0.1  {{STARTTOKEN}}	pretty	dog
+P3  0.1  {{STARTTOKEN}}	pretty	is
+P3  0.05  {{STARTTOKEN}}	pretty	pretty
+P3  0.05  {{STARTTOKEN}}	pretty	cool
+Next! Sum was 1
+P3  0.1  {{STARTTOKEN}}	cool	{{STARTTOKEN}}
+P2  0.5  {{STARTTOKEN}}	cool	{{STOPTOKEN}}
+P3  0.1  {{STARTTOKEN}}	cool	the
+P3  0.1  {{STARTTOKEN}}	cool	dog
+P3  0.1  {{STARTTOKEN}}	cool	is
+P3  0.05  {{STARTTOKEN}}	cool	pretty
+P3  0.05  {{STARTTOKEN}}	cool	cool
+Next! Sum was 1
+P3  0.1  the	the	{{STARTTOKEN}}
+P3  0.1  the	the	{{STOPTOKEN}}
+P3  0.1  the	the	the
+P2  0.5  the	the	dog
+P3  0.1  the	the	is
+P3  0.05  the	the	pretty
+P3  0.05  the	the	cool
+Next! Sum was 1
+P3  0.075  the	dog	{{STARTTOKEN}}
+P3  0.075  the	dog	{{STOPTOKEN}}
+P3  0.075  the	dog	the
+P3  0.075  the	dog	dog
+P1  0.625  the	dog	is
+P3  0.0375  the	dog	pretty
+P3  0.0375  the	dog	cool
+Next! Sum was 1
+P3  0.1  the	is	{{STARTTOKEN}}
+P3  0.1  the	is	{{STOPTOKEN}}
+P3  0.1  the	is	the
+P3  0.1  the	is	dog
+P3  0.1  the	is	is
+P2  0.25  the	is	pretty
+P2  0.25  the	is	cool
+Next! Sum was 1
+P3  0.1  the	pretty	{{STARTTOKEN}}
+P2  0.5  the	pretty	{{STOPTOKEN}}
+P3  0.1  the	pretty	the
+P3  0.1  the	pretty	dog
+P3  0.1  the	pretty	is
+P3  0.05  the	pretty	pretty
+P3  0.05  the	pretty	cool
+Next! Sum was 1
+P3  0.1  the	cool	{{STARTTOKEN}}
+P2  0.5  the	cool	{{STOPTOKEN}}
+P3  0.1  the	cool	the
+P3  0.1  the	cool	dog
+P3  0.1  the	cool	is
+P3  0.05  the	cool	pretty
+P3  0.05  the	cool	cool
+Next! Sum was 1
+P3  0.1  dog	the	{{STARTTOKEN}}
+P3  0.1  dog	the	{{STOPTOKEN}}
+P3  0.1  dog	the	the
+P2  0.5  dog	the	dog
+P3  0.1  dog	the	is
+P3  0.05  dog	the	pretty
+P3  0.05  dog	the	cool
+Next! Sum was 1
+P3  0.1  dog	dog	{{STARTTOKEN}}
+P3  0.1  dog	dog	{{STOPTOKEN}}
+P3  0.1  dog	dog	the
+P3  0.1  dog	dog	dog
+P2  0.5  dog	dog	is
+P3  0.05  dog	dog	pretty
+P3  0.05  dog	dog	cool
+Next! Sum was 1
+P3  0.15  dog	is	{{STARTTOKEN}}
+P3  0.15  dog	is	{{STOPTOKEN}}
+P3  0.15  dog	is	the
+P3  0.15  dog	is	dog
+P3  0.15  dog	is	is
+P1  0.125  dog	is	pretty
+P1  0.125  dog	is	cool
+Next! Sum was 1
+P3  0.1  dog	pretty	{{STARTTOKEN}}
+P2  0.5  dog	pretty	{{STOPTOKEN}}
+P3  0.1  dog	pretty	the
+P3  0.1  dog	pretty	dog
+P3  0.1  dog	pretty	is
+P3  0.05  dog	pretty	pretty
+P3  0.05  dog	pretty	cool
+Next! Sum was 1
+P3  0.1  dog	cool	{{STARTTOKEN}}
+P2  0.5  dog	cool	{{STOPTOKEN}}
+P3  0.1  dog	cool	the
+P3  0.1  dog	cool	dog
+P3  0.1  dog	cool	is
+P3  0.05  dog	cool	pretty
+P3  0.05  dog	cool	cool
+Next! Sum was 1
+P3  0.1  is	the	{{STARTTOKEN}}
+P3  0.1  is	the	{{STOPTOKEN}}
+P3  0.1  is	the	the
+P2  0.5  is	the	dog
+P3  0.1  is	the	is
+P3  0.05  is	the	pretty
+P3  0.05  is	the	cool
+Next! Sum was 1
+P3  0.1  is	dog	{{STARTTOKEN}}
+P3  0.1  is	dog	{{STOPTOKEN}}
+P3  0.1  is	dog	the
+P3  0.1  is	dog	dog
+P2  0.5  is	dog	is
+P3  0.05  is	dog	pretty
+P3  0.05  is	dog	cool
+Next! Sum was 1
+P3  0.1  is	is	{{STARTTOKEN}}
+P3  0.1  is	is	{{STOPTOKEN}}
+P3  0.1  is	is	the
+P3  0.1  is	is	dog
+P3  0.1  is	is	is
+P2  0.25  is	is	pretty
+P2  0.25  is	is	cool
+Next! Sum was 1
+P3  0.15  is	pretty	{{STARTTOKEN}}
+P1  0.25  is	pretty	{{STOPTOKEN}}
+P3  0.15  is	pretty	the
+P3  0.15  is	pretty	dog
+P3  0.15  is	pretty	is
+P3  0.075  is	pretty	pretty
+P3  0.075  is	pretty	cool
+Next! Sum was 1
+P3  0.15  is	cool	{{STARTTOKEN}}
+P1  0.25  is	cool	{{STOPTOKEN}}
+P3  0.15  is	cool	the
+P3  0.15  is	cool	dog
+P3  0.15  is	cool	is
+P3  0.075  is	cool	pretty
+P3  0.075  is	cool	cool
+Next! Sum was 1
+P3  0.1  pretty	the	{{STARTTOKEN}}
+P3  0.1  pretty	the	{{STOPTOKEN}}
+P3  0.1  pretty	the	the
+P2  0.5  pretty	the	dog
+P3  0.1  pretty	the	is
+P3  0.05  pretty	the	pretty
+P3  0.05  pretty	the	cool
+Next! Sum was 1
+P3  0.1  pretty	dog	{{STARTTOKEN}}
+P3  0.1  pretty	dog	{{STOPTOKEN}}
+P3  0.1  pretty	dog	the
+P3  0.1  pretty	dog	dog
+P2  0.5  pretty	dog	is
+P3  0.05  pretty	dog	pretty
+P3  0.05  pretty	dog	cool
+Next! Sum was 1
+P3  0.1  pretty	is	{{STARTTOKEN}}
+P3  0.1  pretty	is	{{STOPTOKEN}}
+P3  0.1  pretty	is	the
+P3  0.1  pretty	is	dog
+P3  0.1  pretty	is	is
+P2  0.25  pretty	is	pretty
+P2  0.25  pretty	is	cool
+Next! Sum was 1
+P3  0.1  pretty	pretty	{{STARTTOKEN}}
+P2  0.5  pretty	pretty	{{STOPTOKEN}}
+P3  0.1  pretty	pretty	the
+P3  0.1  pretty	pretty	dog
+P3  0.1  pretty	pretty	is
+P3  0.05  pretty	pretty	pretty
+P3  0.05  pretty	pretty	cool
+Next! Sum was 1
+P3  0.1  pretty	cool	{{STARTTOKEN}}
+P2  0.5  pretty	cool	{{STOPTOKEN}}
+P3  0.1  pretty	cool	the
+P3  0.1  pretty	cool	dog
+P3  0.1  pretty	cool	is
+P3  0.05  pretty	cool	pretty
+P3  0.05  pretty	cool	cool
+Next! Sum was 1
+P3  0.1  cool	the	{{STARTTOKEN}}
+P3  0.1  cool	the	{{STOPTOKEN}}
+P3  0.1  cool	the	the
+P2  0.5  cool	the	dog
+P3  0.1  cool	the	is
+P3  0.05  cool	the	pretty
+P3  0.05  cool	the	cool
+Next! Sum was 1
+P3  0.1  cool	dog	{{STARTTOKEN}}
+P3  0.1  cool	dog	{{STOPTOKEN}}
+P3  0.1  cool	dog	the
+P3  0.1  cool	dog	dog
+P2  0.5  cool	dog	is
+P3  0.05  cool	dog	pretty
+P3  0.05  cool	dog	cool
+Next! Sum was 1
+P3  0.1  cool	is	{{STARTTOKEN}}
+P3  0.1  cool	is	{{STOPTOKEN}}
+P3  0.1  cool	is	the
+P3  0.1  cool	is	dog
+P3  0.1  cool	is	is
+P2  0.25  cool	is	pretty
+P2  0.25  cool	is	cool
+Next! Sum was 1
+P3  0.1  cool	pretty	{{STARTTOKEN}}
+P2  0.5  cool	pretty	{{STOPTOKEN}}
+P3  0.1  cool	pretty	the
+P3  0.1  cool	pretty	dog
+P3  0.1  cool	pretty	is
+P3  0.05  cool	pretty	pretty
+P3  0.05  cool	pretty	cool
+Next! Sum was 1
+P3  0.1  cool	cool	{{STARTTOKEN}}
+P2  0.5  cool	cool	{{STOPTOKEN}}
+P3  0.1  cool	cool	the
+P3  0.1  cool	cool	dog
+P3  0.1  cool	cool	is
+P3  0.05  cool	cool	pretty
+P3  0.05  cool	cool	cool
+Next! Sum was 1
+
