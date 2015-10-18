@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configs.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CorpusParsing.cs" />
     <Compile Include="P23Extensions.cs" />
