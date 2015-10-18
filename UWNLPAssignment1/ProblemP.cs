@@ -88,8 +88,6 @@ namespace UWNLPAssignment1
 			return alpha * originalP2;
 		}
 
-		private readonly Dictionary<Tuple<string, string>, double> _P3RedefinedCache = new Dictionary<Tuple<string, string>, double>(); 
-
 		private double P3Redefined(string wordminus2, string wordminus1, string word)
 		{
 			double originalP3 = _result.P3(wordminus2, wordminus1, word);
