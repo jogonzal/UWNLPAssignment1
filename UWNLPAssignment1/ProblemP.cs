@@ -62,8 +62,8 @@ namespace UWNLPAssignment1
 		{
 			double p3Redefined = P3Redefined(wordminus2, wordminus1, word);
 
-			double totalSumForP2Redefined = GetTotalSumForP2Redefined(wordminus2, wordminus1);
-			double alpha = (1 - 0.5 * totalSumForP2Redefined);
+			double totalSumForP2 = GetTotalSumForP2(wordminus2, wordminus1);
+			double alpha = (1 - 0.5 * totalSumForP2);
 
 			return alpha * p3Redefined;
 		}
@@ -72,8 +72,8 @@ namespace UWNLPAssignment1
 		{
 			double p2Redefined = P2Redefined(wordminus2, wordminus1, word);
 
-			double totalSumForP3Redefined = GetTotalSumForP3Redefined(wordminus2, wordminus1);
-			double alpha = (1 - 0.5 * totalSumForP3Redefined);
+			double totalSumForP3 = GetTotalSumForP3(wordminus2, wordminus1);
+			double alpha = (1 - 0.5 * totalSumForP3);
 
 			return alpha * p2Redefined;
 		}
@@ -126,40 +126,14 @@ namespace UWNLPAssignment1
 			return totalSum;
 		}
 
-		private readonly Dictionary<Tuple<string, string>, double> _totalSumForP3RedefinedCache = new Dictionary<Tuple<string, string>, double>();
+		private readonly Dictionary<Tuple<string, string>, double> _totalSumForP2Cache = new Dictionary<Tuple<string, string>, double>();
 
-		private double GetTotalSumForP3Redefined(string wordminus2, string wordminus1)
+		private double GetTotalSumForP2(string wordminus2, string wordminus1)
 		{
 			// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
 			var tuple = new Tuple<string, string>(wordminus2, wordminus1);
 			double totalSum;
-			if (_totalSumForP3RedefinedCache.TryGetValue(tuple, out totalSum))
-			{
-				return totalSum;
-			}
-
-			totalSum = 0;
-			foreach (var wordIteration in _result.UniqueWords)
-			{
-				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P3)
-				{
-					totalSum += P3Redefined(wordminus2, wordminus1, wordIteration);
-				}
-			}
-
-			_totalSumForP3RedefinedCache[tuple] = totalSum;
-
-			return totalSum;
-		}
-
-		private readonly Dictionary<Tuple<string, string>, double> _totalSumForP2RedefinedCache = new Dictionary<Tuple<string, string>, double>();
-
-		private double GetTotalSumForP2Redefined(string wordminus2, string wordminus1)
-		{
-			// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
-			var tuple = new Tuple<string, string>(wordminus2, wordminus1);
-			double totalSum;
-			if (_totalSumForP2RedefinedCache.TryGetValue(tuple, out totalSum))
+			if (_totalSumForP2Cache.TryGetValue(tuple, out totalSum))
 			{
 				return totalSum;
 			}
@@ -169,11 +143,37 @@ namespace UWNLPAssignment1
 			{
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P2)
 				{
-					totalSum += P2Redefined(wordminus2, wordminus1, wordIteration);
+					totalSum += _result.P2(wordminus2, wordminus1, wordIteration);
 				}
 			}
 
-			_totalSumForP2RedefinedCache[tuple] = totalSum;
+			_totalSumForP2Cache[tuple] = totalSum;
+
+			return totalSum;
+		}
+
+		private readonly Dictionary<Tuple<string, string>, double> _totalSumForP3Cache = new Dictionary<Tuple<string, string>, double>();
+
+		private double GetTotalSumForP3(string wordminus2, string wordminus1)
+		{
+			// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
+			var tuple = new Tuple<string, string>(wordminus2, wordminus1);
+			double totalSum;
+			if (_totalSumForP3Cache.TryGetValue(tuple, out totalSum))
+			{
+				return totalSum;
+			}
+
+			totalSum = 0;
+			foreach (var wordIteration in _result.UniqueWords)
+			{
+				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P3)
+				{
+					totalSum += _result.P3(wordminus2, wordminus1, wordIteration);
+				}
+			}
+
+			_totalSumForP3Cache[tuple] = totalSum;
 
 			return totalSum;
 		}

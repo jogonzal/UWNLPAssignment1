@@ -68,9 +68,10 @@ namespace UWNLPAssignment1
 			List<Sentence> sentences = new List<Sentence>(sentenceStrings.Length);
 			int uniqueWordCount = 0, totalWordCount = 0;
 
-			// Add STOP to unique words
+			// Add START and STOP to unique words
+			uniqueWords.Add(Constants.Start);
 			uniqueWords.Add(Constants.Stop);
-			uniqueWordCount++;
+			uniqueWordCount+=2;
 
 			foreach (var sentenceString in sentenceStrings)
 			{
@@ -89,8 +90,8 @@ namespace UWNLPAssignment1
 						}
 					}
 
-					// Don't forget about STOP!
-					totalWordCount++;
+					// Don't forget about STOP AND START!
+					totalWordCount += 2;
 
 					sentences.Add(new Sentence()
 						{
@@ -114,8 +115,14 @@ namespace UWNLPAssignment1
 			// Pass through all sentences and through all words, populating unigram
 			foreach (var sentence in sentences)
 			{
-				string previousWord = null;
-				string previousPreviousWord = null;
+				// Consider start
+				string previousWord = Constants.Start;
+				string previousPreviousWord = Constants.Start;
+
+				// Add start as a unigram and bigram before starting
+				unigrams[Constants.Start] = unigrams.ContainsKey(Constants.Start) ? unigrams[Constants.Start] + 1 : 1;
+				var startKey = new Tuple<string, string>(Constants.Start, Constants.Start);
+				bigrams[startKey] = bigrams.ContainsKey(startKey) ? bigrams[startKey] + 1 : 1;
 
 				for (int i = 0; i < sentence.Words.Length + 1; i++)
 				{
@@ -127,7 +134,7 @@ namespace UWNLPAssignment1
 					}
 					else
 					{
-						word = sentence.Words[i];	
+						word = sentence.Words[i];
 					}
 
 					// Unigram
@@ -135,21 +142,15 @@ namespace UWNLPAssignment1
 					unigrams[unigramKey] = unigrams.ContainsKey(unigramKey) ? unigrams[unigramKey] + 1 : 1;
 					totalUnigrams++;
 
-					if (previousWord != null)
-					{
-						// Bigram
-						var bigramKey = new Tuple<string, string>(previousWord, word);
-						bigrams[bigramKey] = bigrams.ContainsKey(bigramKey) ? bigrams[bigramKey] + 1 : 1;
-						totalBigrams++;
+					// Bigram
+					var bigramKey = new Tuple<string, string>(previousWord, word);
+					bigrams[bigramKey] = bigrams.ContainsKey(bigramKey) ? bigrams[bigramKey] + 1 : 1;
+					totalBigrams++;
 
-						if (previousPreviousWord != null)
-						{
-							// Trigram
-							var trigramKey = new Tuple<string, string, string>(previousPreviousWord, previousWord, word);
-							trigrams[trigramKey] = trigrams.ContainsKey(trigramKey) ? trigrams[trigramKey] + 1 : 1;
-							totalTrigrams++;
-						}
-					}
+					// Trigram
+					var trigramKey = new Tuple<string, string, string>(previousPreviousWord, previousWord, word);
+					trigrams[trigramKey] = trigrams.ContainsKey(trigramKey) ? trigrams[trigramKey] + 1 : 1;
+					totalTrigrams++;
 
 					// Move to next
 					previousPreviousWord = previousWord;
