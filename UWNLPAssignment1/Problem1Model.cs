@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace UWNLPAssignment1
 {
-	public class ProblemP
+	public class Problem1Model : ILanguageModel
 	{
 		private readonly CorpusParsingResult _result;
 
-		public ProblemP(CorpusParsingResult result)
+		public Problem1Model(CorpusParsingResult result)
 		{
 			_result = result;
 		}
@@ -80,7 +80,7 @@ namespace UWNLPAssignment1
 
 		private double P2Redefined(string wordminus2, string wordminus1, string word)
 		{
-			double originalP2 = _result.P2(wordminus2, wordminus1, word);
+			double originalP2 = P2(wordminus2, wordminus1, word);
 
 			double totalSumForP1Redefined = GetTotalSumForP1Redefined(wordminus2, wordminus1);
 			double alpha = (1 - totalSumForP1Redefined);
@@ -90,7 +90,7 @@ namespace UWNLPAssignment1
 
 		private double P3Redefined(string wordminus2, string wordminus1, string word)
 		{
-			double originalP3 = _result.P3(wordminus2, wordminus1, word);
+			double originalP3 = P3(wordminus2, wordminus1, word);
 
 			double totalSumForP1Redefined = GetTotalSumForP1Redefined(wordminus2, wordminus1);
 			double alpha = (1 - totalSumForP1Redefined);
@@ -141,7 +141,7 @@ namespace UWNLPAssignment1
 			{
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P2)
 				{
-					totalSum += _result.P2(wordminus2, wordminus1, wordIteration);
+					totalSum += P2(wordminus2, wordminus1, wordIteration);
 				}
 			}
 
@@ -167,13 +167,49 @@ namespace UWNLPAssignment1
 			{
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P3)
 				{
-					totalSum += _result.P3(wordminus2, wordminus1, wordIteration);
+					totalSum += P3(wordminus2, wordminus1, wordIteration);
 				}
 			}
 
 			_totalSumForP3Cache[tuple] = totalSum;
 
 			return totalSum;
+		}
+
+		public double P2(string wordminus2, string wordminus1, string word)
+		{
+			double pmlBigramAbove = _result.Pml(wordminus1, word);
+
+			double sumBelow = 0;
+			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+			foreach (var potentialWordWithoutTrigram in _result.UniqueWords)
+			{
+				if (_result.GetCountForTrigram(wordminus2, wordminus1, potentialWordWithoutTrigram) == 0)
+				{
+					string wordWithoutTrigram = potentialWordWithoutTrigram;
+					sumBelow += _result.Pml(wordminus1, wordWithoutTrigram);
+				}
+			}
+
+			return pmlBigramAbove / sumBelow;
+		}
+
+		public double P3(string wordminus2, string wordminus1, string word)
+		{
+			double pmlBigramAbove = _result.Pml(word);
+
+			double sumBelow = 0;
+			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+			foreach (var potentialWordWithoutBigram in _result.UniqueWords)
+			{
+				if (_result.GetCountForBigram(wordminus1, potentialWordWithoutBigram) == 0)
+				{
+					string wordWithoutBigram = potentialWordWithoutBigram;
+					sumBelow += _result.Pml(wordWithoutBigram);
+				}
+			}
+
+			return pmlBigramAbove / sumBelow;
 		}
 
 	}

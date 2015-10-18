@@ -44,9 +44,8 @@
     <Compile Include="Configs.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CorpusParsing.cs" />
-    <Compile Include="P23Extensions.cs" />
     <Compile Include="Pml.cs" />
-    <Compile Include="ProblemP.cs" />
+    <Compile Include="Problem1Model.cs" />
     <Compile Include="ReadCorpusFile.cs" />
     <Compile Include="SampleCorpus.cs" />
     <Compile Include="PrintExtensions.cs" />

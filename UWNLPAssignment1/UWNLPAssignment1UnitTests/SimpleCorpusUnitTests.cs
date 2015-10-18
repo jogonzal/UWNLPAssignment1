@@ -62,7 +62,7 @@ namespace UWNLPAssignment1UnitTests
 			result.TotalBigrams.Should().Be(10);
 			result.TotalTrigrams.Should().Be(10);
 
-			ProblemP problemP = new ProblemP(result);
+			Problem1Model problemP = new Problem1Model(result);
 
 			// Verify the function for P is well defined for trigrams that exist
 			foreach (var wordminus2 in result.UniqueWords)
