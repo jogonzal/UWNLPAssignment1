@@ -6,13 +6,18 @@ namespace UWNLPAssignment1
 	{
 		static void Main(string[] args)
 		{
-			var fileReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
+			ReadCorpusResult fileReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
 
-			var result = CorpusParsing.ParseCorpus(fileReadResults.Training);
+			CorpusParsingResult result = CorpusParsing.ParseCorpus(fileReadResults.Training);
 			Console.WriteLine(result.PrettyPrint());
-			Console.WriteLine(result.PrettyPrintUnigrams());
-			Console.WriteLine(result.PrettyPrintBigrams());
-			Console.WriteLine(result.PrettyPrintTrigrams());
+
+			//Console.WriteLine(result.PrettyPrintUnigrams());
+			//Console.WriteLine(result.PrettyPrintBigrams());
+			//Console.WriteLine(result.PrettyPrintTrigrams());
+
+			ILanguageModel model = new LinearModel(result);
+
+			
 
 			Console.ReadLine();
 		}

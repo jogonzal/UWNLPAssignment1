@@ -10,6 +10,8 @@ namespace UWNLPAssignment1
 		public string Development { get; set; }
 
 		public string Evaluation { get; set; }
+
+		public RealCorpus CorpusName { get; set; }
 	}
 
 	public enum RealCorpus
@@ -53,7 +55,8 @@ namespace UWNLPAssignment1
 			{
 				Training = training,
 				Development = development,
-				Evaluation = evaluation
+				Evaluation = evaluation,
+				CorpusName = corpus
 			};
 		}
 	}
