@@ -18,7 +18,10 @@ namespace UWNLPAssignment1
 	{
 		Reuters,
 		Brown,
-		Gutenberg
+		Gutenberg,
+		SampleCorpusNumberSentences,
+		SampleTwoDogSentences,
+		SampleLoremIpsum
 	}
 
 	public static class ReadCorpusFile
