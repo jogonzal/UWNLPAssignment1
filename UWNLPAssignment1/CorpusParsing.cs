@@ -48,6 +48,8 @@ namespace UWNLPAssignment1
 		public int TotalUnigrams { get; set; }
 
 		public int TotalTrigrams { get; set; }
+
+		public RealCorpus CorpusName { get; set; }
 	}
 
 	public class StringParsingResult
@@ -61,9 +63,9 @@ namespace UWNLPAssignment1
 
 	public static class CorpusParsing
 	{
-		public static CorpusParsingResult ParseCorpus(string corpus, bool unkEnabled)
+		public static CorpusParsingResult ParseCorpus(ReadCorpusResult readCorpus, bool unkEnabled)
 		{
-			StringParsingResult parsingResult = ParseString(corpus);
+			StringParsingResult parsingResult = ParseString(readCorpus.Training);
 
 			if (unkEnabled)
 			{
@@ -146,7 +148,8 @@ namespace UWNLPAssignment1
 				UniqueWords = parsingResult.UniqueWords,
 				TotalUnigrams = totalUnigrams,
 				TotalBigrams = totalBigrams,
-				TotalTrigrams = totalTrigrams
+				TotalTrigrams = totalTrigrams,
+				CorpusName = readCorpus.CorpusName
 			};
 		}
 

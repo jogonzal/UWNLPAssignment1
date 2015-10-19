@@ -5,7 +5,7 @@ namespace UWNLPAssignment1
 {
 	public static class Perplexity
 	{
-		public static double CalculatePerplexity(ILanguageModel model, CorpusParsingResult corpus, StringParsingResult testCorpus)
+		public static double CalculatePerplexity(ILanguageModel model, CorpusParsingResult trainingCorpus, StringParsingResult testCorpus)
 		{
 			double logSumOfCorpus = 0;
 			for (int k = 0; k < testCorpus.Sentences.Count; k++)
@@ -18,7 +18,7 @@ namespace UWNLPAssignment1
 				for (int i = 0; i < sentence.Words.Length; i++)
 				{
 					string calculatedWord = sentence.Words[i];
-					if (!corpus.UniqueWords.ContainsKey(sentence.Words[i]))
+					if (!trainingCorpus.UniqueWords.ContainsKey(sentence.Words[i]))
 					{
 						calculatedWord = Constants.Unknown;
 					}
