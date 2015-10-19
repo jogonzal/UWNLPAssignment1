@@ -65,7 +65,7 @@ namespace UWNLPAssignment1UnitTests
 		public void Problem1Model_WellDefinedProbability()
 		{
 			ILanguageModel problem1Model = new Problem1Model(_twoDogSentencesCorpus);
-			TestWellDefinedProbability(problem1Model, true);
+			TestWellDefinedProbability(problem1Model, false);
 		}
 
 		[TestMethod]

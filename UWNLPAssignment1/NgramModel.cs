@@ -4,6 +4,11 @@ namespace UWNLPAssignment1
 {
 	public class TrigramModel : ILanguageModel
 	{
+		public string GetModelName()
+		{
+			return "TrigramModel";
+		}
+
 		private readonly CorpusParsingResult _result;
 
 		public TrigramModel(CorpusParsingResult result)
@@ -31,6 +36,11 @@ namespace UWNLPAssignment1
 
 	public class BigramModel : ILanguageModel
 	{
+		public string GetModelName()
+		{
+			return "BigramModel";
+		}
+
 		private readonly CorpusParsingResult _result;
 
 		public BigramModel(CorpusParsingResult result)
@@ -59,6 +69,11 @@ namespace UWNLPAssignment1
 
 	public class UnigramModel : ILanguageModel
 	{
+		public string GetModelName()
+		{
+			return "UnigramModel";
+		}
+
 		private readonly CorpusParsingResult _result;
 
 		public UnigramModel(CorpusParsingResult result)

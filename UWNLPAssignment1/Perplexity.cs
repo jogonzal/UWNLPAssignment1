@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace UWNLPAssignment1
 {
@@ -7,22 +8,23 @@ namespace UWNLPAssignment1
 		public static double CalculatePerplexity(ILanguageModel model, CorpusParsingResult corpus, StringParsingResult testCorpus)
 		{
 			double logSumOfCorpus = 0;
-			foreach (var sentence in testCorpus.Sentences)
+			for (int k = 0; k < testCorpus.Sentences.Count; k++)
 			{
+				Sentence sentence = testCorpus.Sentences[k];
 				double logOfSentence = 0;
 				string previousWord = Constants.Start;
 				string previousPreviousWord = Constants.Start;
 
-				foreach (var word in sentence.Words)
+				for (int i = 0; i < sentence.Words.Length; i++)
 				{
-					string calculatedWord = word;
-					if (!corpus.UniqueWords.ContainsKey(word))
+					string calculatedWord = sentence.Words[i];
+					if (!corpus.UniqueWords.ContainsKey(sentence.Words[i]))
 					{
 						calculatedWord = Constants.Unknown;
 					}
 
 					double modelP = model.P(previousPreviousWord, previousWord, calculatedWord);
-					double logModelP = Math.Log(modelP);
+					double logModelP = Math.Log(modelP, 2);
 					logOfSentence += logModelP;
 
 					previousPreviousWord = previousWord;
@@ -38,7 +40,12 @@ namespace UWNLPAssignment1
 				{
 					throw new InvalidOperationException();
 				}
-			}
+
+				//if (k%100 == 0)
+				//{
+				//	Console.WriteLine("Now at sentence {0}", k);
+				//}
+		}
 
 			double sum = logSumOfCorpus / testCorpus.TotalWordCount;
 			return Math.Pow(2, -1*sum);

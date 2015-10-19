@@ -11,17 +11,17 @@
 		/// <summary>
 		/// Trigram weight
 		/// </summary>
-		public const double Lambda1 = 0.34;
+		public static double Lambda1 = 0.3;
 
 		/// <summary>
 		/// Bigram weight
 		/// </summary>
-		public const double Lambda2 = 0.33;
+		public static double Lambda2 = 0.4;
 
 		/// <summary>
 		/// Unigram weight
 		/// </summary>
-		public const double Lambda3 = 0.33;
+		public static double Lambda3 = 0.3;
 
 		/// <summary>
 		/// The "expected" percentage of unks in the test model

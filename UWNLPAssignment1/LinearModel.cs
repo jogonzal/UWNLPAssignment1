@@ -35,5 +35,10 @@ namespace UWNLPAssignment1
 
 			return total;
 		}
+
+		public string GetModelName()
+		{
+			return "LinearModel";
+		}
 	}
 }

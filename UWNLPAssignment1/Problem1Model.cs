@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace UWNLPAssignment1
 {
@@ -44,16 +45,16 @@ namespace UWNLPAssignment1
 					pml = _result.PmlRedefined(wordminus2, wordminus1, word);
 					break;
 				case PBucket.P2:
-					pml = P2RedefinedRedefined(wordminus2, wordminus1, word);
+					pml = P2Redefined(wordminus2, wordminus1, word);
 					break;
 				case PBucket.P3:
-					pml = P3RedefinedRedefined(wordminus2, wordminus1, word);
+					pml = P3Redefined(wordminus2, wordminus1, word);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 
-			Debug.Print("{0}  {1}  {2}\t{3}\t{4}", bucket, pml, wordminus2, wordminus1, word);
+			//Debug.Print("{0}  {1}  {2}\t{3}\t{4}", bucket, pml, wordminus2, wordminus1, word);
 
 			return pml;
 		}
@@ -83,7 +84,7 @@ namespace UWNLPAssignment1
 			double originalP2 = P2(wordminus2, wordminus1, word);
 
 			double totalSumForP1Redefined = GetTotalSumForP1Redefined(wordminus2, wordminus1);
-			double alpha = (1 - totalSumForP1Redefined);
+			double alpha = (1 - totalSumForP1Redefined) * 0.5;
 
 			return alpha * originalP2;
 		}
@@ -93,7 +94,7 @@ namespace UWNLPAssignment1
 			double originalP3 = P3(wordminus2, wordminus1, word);
 
 			double totalSumForP1Redefined = GetTotalSumForP1Redefined(wordminus2, wordminus1);
-			double alpha = (1 - totalSumForP1Redefined);
+			double alpha = (1 - totalSumForP1Redefined) * 0.5;
 
 			return alpha * originalP3;
 		}
@@ -137,8 +138,9 @@ namespace UWNLPAssignment1
 			}
 
 			totalSum = 0;
-			foreach (var wordIteration in _result.UniqueWords.Keys)
+			for (int i = 0; i < _result.UniqueWords.Count; i++)
 			{
+				var wordIteration = _result.UniqueWords.Keys.ElementAt(i);
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P2)
 				{
 					totalSum += P2(wordminus2, wordminus1, wordIteration);
@@ -163,8 +165,9 @@ namespace UWNLPAssignment1
 			}
 
 			totalSum = 0;
-			foreach (var wordIteration in _result.UniqueWords.Keys)
+			for (int i = 0; i < _result.UniqueWords.Count; i++)
 			{
+				var wordIteration = _result.UniqueWords.Keys.ElementAt(i);
 				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P3)
 				{
 					totalSum += P3(wordminus2, wordminus1, wordIteration);
@@ -180,37 +183,123 @@ namespace UWNLPAssignment1
 		{
 			double pmlBigramAbove = _result.Pml(wordminus1, word);
 
-			double sumBelow = 0;
-			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
-			foreach (var potentialWordWithoutTrigram in _result.UniqueWords.Keys)
+			var sumBelow = SumForP2Factor(wordminus2, wordminus1);
+
+			return pmlBigramAbove / sumBelow;
+		}
+
+		private readonly Dictionary<Tuple<string, string>, double> _sumForP2FactorCache = new Dictionary<Tuple<string, string>, double>(); 
+
+		private double SumForP2Factor(string wordminus2, string wordminus1)
+		{
+			double sumBelow;
+			var key = new Tuple<string, string>(wordminus2, wordminus1);
+			if (_sumForP2FactorCache.TryGetValue(key, out sumBelow))
 			{
-				if (_result.GetCountForTrigram(wordminus2, wordminus1, potentialWordWithoutTrigram) == 0)
+				return sumBelow;
+			}
+
+			sumBelow = 0;
+			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+			foreach (var wordWithoutTrigram in GetBigramsWithoutTrigrams(wordminus2, wordminus1))
+			{
+				sumBelow += _result.Pml(wordminus1, wordWithoutTrigram);
+			}
+
+			_sumForP2FactorCache[key] = sumBelow;
+
+			return sumBelow;
+		}
+
+		private Dictionary<Tuple<string, string>, List<string>> _bigramsWithoutBigrams = new Dictionary<Tuple<string, string>, List<string>>();
+
+		private List<string> GetBigramsWithoutTrigrams(string wordminus2, string wordminus1)
+		{
+			List<string> wordsWithoutTrigrams;
+			//var key = new Tuple<string, string>(wordminus2, wordminus1);
+			//if (_bigramsWithoutBigrams.TryGetValue(key, out wordsWithoutTrigrams))
+			//{
+			//	return wordsWithoutTrigrams;
+			//}
+
+			wordsWithoutTrigrams = new List<string>();
+
+			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+			foreach (string potentialWordWithoutBigram in _result.UniqueWords.Keys)
+			{
+				if (_result.GetCountForTrigram(wordminus2, wordminus1, potentialWordWithoutBigram) == 0)
 				{
-					string wordWithoutTrigram = potentialWordWithoutTrigram;
-					sumBelow += _result.Pml(wordminus1, wordWithoutTrigram);
+					wordsWithoutTrigrams.Add(potentialWordWithoutBigram);
 				}
 			}
 
-			return pmlBigramAbove / sumBelow;
+			//_bigramsWithoutBigrams[key] = wordsWithoutTrigrams;
+
+			return wordsWithoutTrigrams;
 		}
 
 		public double P3(string wordminus2, string wordminus1, string word)
 		{
 			double pmlBigramAbove = _result.Pml(word);
 
-			double sumBelow = 0;
+			var sumBelow = SumForP3Factor(wordminus1);
+
+			return pmlBigramAbove / sumBelow;
+		}
+
+		private readonly Dictionary<string, double> _sumForP3FactorCache = new Dictionary<string, double>(); 
+
+		private double SumForP3Factor(string wordminus1)
+		{
+			double sumBelow;
+			var key = wordminus1;
+			if (_sumForP3FactorCache.TryGetValue(key, out sumBelow))
+			{
+				return sumBelow;
+			}
+
+			sumBelow = 0;
+			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+			foreach (var wordWithoutBigram in GetUnigramsWithoutBigrams(wordminus1))
+			{
+				sumBelow += _result.Pml(wordWithoutBigram);
+			}
+
+			_sumForP3FactorCache[key] = sumBelow;
+
+			return sumBelow;
+		}
+
+		private Dictionary<string, List<string>> _unigramsWithoutBigrams = new Dictionary<string, List<string>>();
+
+		private List<string> GetUnigramsWithoutBigrams(string wordminus1)
+		{
+			List<string> wordsWithoutBigrams;
+			//var key = wordminus1;
+			//if (_unigramsWithoutBigrams.TryGetValue(wordminus1, out wordsWithoutBigrams))
+			//{
+			//	return wordsWithoutBigrams;
+			//}
+
+			wordsWithoutBigrams = new List<string>();
+
 			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
 			foreach (var potentialWordWithoutBigram in _result.UniqueWords.Keys)
 			{
 				if (_result.GetCountForBigram(wordminus1, potentialWordWithoutBigram) == 0)
 				{
-					string wordWithoutBigram = potentialWordWithoutBigram;
-					sumBelow += _result.Pml(wordWithoutBigram);
+					wordsWithoutBigrams.Add(potentialWordWithoutBigram);
 				}
 			}
 
-			return pmlBigramAbove / sumBelow;
+			//_unigramsWithoutBigrams[key] = wordsWithoutBigrams;
+
+			return wordsWithoutBigrams;
 		}
 
+		public string GetModelName()
+		{
+			return "Problem1Model";
+		}
 	}
 }
