@@ -121,7 +121,7 @@ namespace UWNLPAssignment1UnitTests
 					}
 
 					double total = 0;
-					foreach (var word in _twoDogSentencesCorpus.UniqueWords.Keys)
+					foreach (var word in _twoDogSentencesCorpus.UniqueWords.Keys.Where(w => w != Constants.Start))
 					{
 						double pml = model.P(wordminus2, wordminus1, word);
 						if (pml > 0)

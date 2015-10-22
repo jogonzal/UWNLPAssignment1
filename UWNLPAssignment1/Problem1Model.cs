@@ -54,248 +54,341 @@ namespace UWNLPAssignment1
 					throw new ArgumentOutOfRangeException();
 			}
 
-			//Debug.Print("{0}  {1}  {2}\t{3}\t{4}", bucket, pml, wordminus2, wordminus1, word);
+			Debug.WriteLine("{0}  {1}  {2}\t{3}\t{4}", bucket, pml, wordminus2, wordminus1, word);
 
 			return pml;
 		}
 
-		private double P3RedefinedRedefined(string wordminus2, string wordminus1, string word)
-		{
-			double p3Redefined = P3Redefined(wordminus2, wordminus1, word);
-
-			double totalSumForP2 = GetTotalSumForP2(wordminus2, wordminus1);
-			double alpha = (1 - 0.5 * totalSumForP2);
-
-			return alpha * p3Redefined;
-		}
-
-		private double P2RedefinedRedefined(string wordminus2, string wordminus1, string word)
-		{
-			double p2Redefined = P2Redefined(wordminus2, wordminus1, word);
-
-			double totalSumForP3 = GetTotalSumForP3(wordminus2, wordminus1);
-			double alpha = (1 - 0.5 * totalSumForP3);
-
-			return alpha * p2Redefined;
-		}
-
 		private double P2Redefined(string wordminus2, string wordminus1, string word)
 		{
-			double originalP2 = P2(wordminus2, wordminus1, word);
+			double pmlRedefinedValue = _result.PmlRedefined(wordminus1, word);
+			double alpha1 = GetAlpha1Value(wordminus2, wordminus1);
+			double sumofqbo = GetDenominatorForP2(wordminus2, wordminus1);
 
-			double totalSumForP1Redefined = GetTotalSumForP1Redefined(wordminus2, wordminus1);
-			double alpha = (1 - totalSumForP1Redefined) * 0.5;
-
-			return alpha * originalP2;
+			return alpha1*pmlRedefinedValue/sumofqbo;
 		}
 
-		private double P3Redefined(string wordminus2, string wordminus1, string word)
+		private readonly Dictionary<Tuple<string, string>, double> _denominatorForP2Cache = new Dictionary<Tuple<string, string>, double>(); 
+
+		private double GetDenominatorForP2(string wordminus2, string wordminus1)
 		{
-			double originalP3 = P3(wordminus2, wordminus1, word);
-
-			double totalSumForP1Redefined = GetTotalSumForP1Redefined(wordminus2, wordminus1);
-			double alpha = (1 - totalSumForP1Redefined) * 0.5;
-
-			return alpha * originalP3;
-		}
-
-		private readonly Dictionary<Tuple<string, string>, double> _totalSumForP1RedefinedCache = new Dictionary<Tuple<string, string>, double>(); 
-
-		private double GetTotalSumForP1Redefined(string wordminus2, string wordminus1)
-		{
-			// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
-			var tuple = new Tuple<string, string>(wordminus2, wordminus1);
 			double totalSum;
-			if (_totalSumForP1RedefinedCache.TryGetValue(tuple, out totalSum))
+			var key = new Tuple<string, string>(wordminus2, wordminus1);
+			if (_denominatorForP2Cache.TryGetValue(key, out totalSum))
 			{
 				return totalSum;
 			}
 
 			totalSum = 0;
-			foreach (var wordIteration in _result.UniqueWords.Keys)
+
+			foreach (var wordIteration in _result.UniqueWords.Keys.Where(w => w != Constants.Start))
 			{
-				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P1)
+				if (_result.GetCountForTrigram(wordminus2, wordminus1, wordIteration) == 0)
+				{
+					totalSum += Qbo(wordminus1, wordIteration);
+				}
+			}
+
+			_denominatorForP2Cache[key] = totalSum;
+			return totalSum;
+		}
+
+		private double Qbo(string wordminus1, string wordIteration)
+		{
+			if (_result.GetCountForBigram(wordminus1, wordIteration) > 0)
+			{
+				return _result.PmlRedefined(wordminus1, wordIteration);
+			}
+			else
+			{
+				return GetAlpha2Value(wordminus1)*_result.Pml(wordIteration)/GetDenominadorForP3(wordminus1);
+			}
+		}
+
+		private readonly Dictionary<Tuple<string, string>, double> _alpha1Cache = new Dictionary<Tuple<string, string>, double>(); 
+
+		private double GetAlpha1Value(string wordminus2, string wordminus1)
+		{
+			double totalSum;
+			var key = new Tuple<string, string>(wordminus2, wordminus1);
+			if (_alpha1Cache.TryGetValue(key, out totalSum))
+			{
+				return totalSum;
+			}
+
+			totalSum = 0;
+
+			foreach (var wordIteration in _result.UniqueWords.Keys.Where(w => w != Constants.Start))
+			{
+				if (_result.GetCountForTrigram(wordminus2, wordminus1, wordIteration) > 0)
 				{
 					totalSum += _result.PmlRedefined(wordminus2, wordminus1, wordIteration);
 				}
 			}
 
-			_totalSumForP1RedefinedCache[tuple] = totalSum;
-
-			return totalSum;
+			double alpha = 1 - totalSum;
+			_alpha1Cache[key] = alpha;
+			return alpha;
 		}
 
-		private readonly Dictionary<Tuple<string, string>, double> _totalSumForP2Cache = new Dictionary<Tuple<string, string>, double>();
-
-		private double GetTotalSumForP2(string wordminus2, string wordminus1)
+		private double P3Redefined(string wordminus2, string wordminus1, string word)
 		{
-			// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
-			var tuple = new Tuple<string, string>(wordminus2, wordminus1);
+			double pml = _result.Pml(word);
+			double alpha1 = GetAlpha1Value(wordminus2, wordminus1);
+			double alpha2 = GetAlpha2Value(wordminus1);
+			double denominatorForP3 = GetDenominadorForP3(wordminus1);
+
+			return pml*alpha1*alpha2/denominatorForP3;
+		}
+
+		private readonly Dictionary<string, double> _denominatorForPml3Cache = new Dictionary<string, double>(); 
+
+		private double GetDenominadorForP3(string wordminus1)
+		{
 			double totalSum;
-			if (_totalSumForP2Cache.TryGetValue(tuple, out totalSum))
-			{
-				return totalSum;
-			}
-
-			totalSum = 0;
-			for (int i = 0; i < _result.UniqueWords.Count; i++)
-			{
-				var wordIteration = _result.UniqueWords.Keys.ElementAt(i);
-				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P2)
-				{
-					totalSum += P2(wordminus2, wordminus1, wordIteration);
-				}
-			}
-
-			_totalSumForP2Cache[tuple] = totalSum;
-
-			return totalSum;
-		}
-
-		private readonly Dictionary<Tuple<string, string>, double> _totalSumForP3Cache = new Dictionary<Tuple<string, string>, double>();
-
-		private double GetTotalSumForP3(string wordminus2, string wordminus1)
-		{
-			// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
-			var tuple = new Tuple<string, string>(wordminus2, wordminus1);
-			double totalSum;
-			if (_totalSumForP3Cache.TryGetValue(tuple, out totalSum))
-			{
-				return totalSum;
-			}
-
-			totalSum = 0;
-			for (int i = 0; i < _result.UniqueWords.Count; i++)
-			{
-				var wordIteration = _result.UniqueWords.Keys.ElementAt(i);
-				if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P3)
-				{
-					totalSum += P3(wordminus2, wordminus1, wordIteration);
-				}
-			}
-
-			_totalSumForP3Cache[tuple] = totalSum;
-
-			return totalSum;
-		}
-
-		public double P2(string wordminus2, string wordminus1, string word)
-		{
-			double pmlBigramAbove = _result.Pml(wordminus1, word);
-
-			var sumBelow = SumForP2Factor(wordminus2, wordminus1);
-
-			return pmlBigramAbove / sumBelow;
-		}
-
-		private readonly Dictionary<Tuple<string, string>, double> _sumForP2FactorCache = new Dictionary<Tuple<string, string>, double>(); 
-
-		private double SumForP2Factor(string wordminus2, string wordminus1)
-		{
-			double sumBelow;
-			var key = new Tuple<string, string>(wordminus2, wordminus1);
-			if (_sumForP2FactorCache.TryGetValue(key, out sumBelow))
-			{
-				return sumBelow;
-			}
-
-			sumBelow = 0;
-			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
-			foreach (var wordWithoutTrigram in GetBigramsWithoutTrigrams(wordminus2, wordminus1))
-			{
-				sumBelow += _result.Pml(wordminus1, wordWithoutTrigram);
-			}
-
-			_sumForP2FactorCache[key] = sumBelow;
-
-			return sumBelow;
-		}
-
-		private Dictionary<Tuple<string, string>, List<string>> _bigramsWithoutBigrams = new Dictionary<Tuple<string, string>, List<string>>();
-
-		private List<string> GetBigramsWithoutTrigrams(string wordminus2, string wordminus1)
-		{
-			List<string> wordsWithoutTrigrams;
-			//var key = new Tuple<string, string>(wordminus2, wordminus1);
-			//if (_bigramsWithoutBigrams.TryGetValue(key, out wordsWithoutTrigrams))
-			//{
-			//	return wordsWithoutTrigrams;
-			//}
-
-			wordsWithoutTrigrams = new List<string>();
-
-			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
-			foreach (string potentialWordWithoutBigram in _result.UniqueWords.Keys)
-			{
-				if (_result.GetCountForTrigram(wordminus2, wordminus1, potentialWordWithoutBigram) == 0)
-				{
-					wordsWithoutTrigrams.Add(potentialWordWithoutBigram);
-				}
-			}
-
-			//_bigramsWithoutBigrams[key] = wordsWithoutTrigrams;
-
-			return wordsWithoutTrigrams;
-		}
-
-		public double P3(string wordminus2, string wordminus1, string word)
-		{
-			double pmlBigramAbove = _result.Pml(word);
-
-			var sumBelow = SumForP3Factor(wordminus1);
-
-			return pmlBigramAbove / sumBelow;
-		}
-
-		private readonly Dictionary<string, double> _sumForP3FactorCache = new Dictionary<string, double>(); 
-
-		private double SumForP3Factor(string wordminus1)
-		{
-			double sumBelow;
 			var key = wordminus1;
-			if (_sumForP3FactorCache.TryGetValue(key, out sumBelow))
+			if (_denominatorForPml3Cache.TryGetValue(key, out totalSum))
 			{
-				return sumBelow;
+				return totalSum;
 			}
 
-			sumBelow = 0;
-			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
-			foreach (var wordWithoutBigram in GetUnigramsWithoutBigrams(wordminus1))
+			totalSum = 0;
+
+			foreach (var wordIteration in _result.UniqueWords.Keys.Where(w => w != Constants.Start))
 			{
-				sumBelow += _result.Pml(wordWithoutBigram);
-			}
-
-			_sumForP3FactorCache[key] = sumBelow;
-
-			return sumBelow;
-		}
-
-		private Dictionary<string, List<string>> _unigramsWithoutBigrams = new Dictionary<string, List<string>>();
-
-		private List<string> GetUnigramsWithoutBigrams(string wordminus1)
-		{
-			List<string> wordsWithoutBigrams;
-			//var key = wordminus1;
-			//if (_unigramsWithoutBigrams.TryGetValue(wordminus1, out wordsWithoutBigrams))
-			//{
-			//	return wordsWithoutBigrams;
-			//}
-
-			wordsWithoutBigrams = new List<string>();
-
-			// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
-			foreach (var potentialWordWithoutBigram in _result.UniqueWords.Keys)
-			{
-				if (_result.GetCountForBigram(wordminus1, potentialWordWithoutBigram) == 0)
+				if (_result.GetCountForBigram(wordminus1, wordIteration) == 0)
 				{
-					wordsWithoutBigrams.Add(potentialWordWithoutBigram);
+					totalSum += _result.Pml(wordIteration);
 				}
 			}
 
-			//_unigramsWithoutBigrams[key] = wordsWithoutBigrams;
-
-			return wordsWithoutBigrams;
+			_denominatorForPml3Cache[key] = totalSum;
+			return totalSum;
 		}
+
+		private readonly Dictionary<string, double> _alpha2Cache = new Dictionary<string, double>(); 
+
+		private double GetAlpha2Value(string wordminus1)
+		{
+			double totalSum;
+			var key = wordminus1;
+			if (_alpha2Cache.TryGetValue(key, out totalSum))
+			{
+				return totalSum;
+			}
+
+			totalSum = 0;
+
+			foreach (var wordIteration in _result.UniqueWords.Keys.Where(w => w != Constants.Start))
+			{
+				if (_result.GetCountForBigram(wordminus1, wordIteration) > 0)
+				{
+					totalSum += _result.PmlRedefined(wordminus1, wordIteration);
+				}
+			}
+
+			double alpha = 1 - totalSum;
+			_alpha2Cache[key] = alpha;
+			return alpha;
+		}
+
+		//private readonly Dictionary<Tuple<string, string>, double> _totalSumForP1RedefinedCache = new Dictionary<Tuple<string, string>, double>(); 
+
+		//private double GetTotalSumForP1Redefined(string wordminus2, string wordminus1)
+		//{
+		//	// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
+		//	var tuple = new Tuple<string, string>(wordminus2, wordminus1);
+		//	double totalSum;
+		//	if (_totalSumForP1RedefinedCache.TryGetValue(tuple, out totalSum))
+		//	{
+		//		return totalSum;
+		//	}
+
+		//	totalSum = 0;
+		//	foreach (var wordIteration in _result.UniqueWords.Keys)
+		//	{
+		//		if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P1)
+		//		{
+		//			totalSum += _result.PmlRedefined(wordminus2, wordminus1, wordIteration);
+		//		}
+		//	}
+
+		//	_totalSumForP1RedefinedCache[tuple] = totalSum;
+
+		//	return totalSum;
+		//}
+
+		//private readonly Dictionary<Tuple<string, string>, double> _totalSumForP2Cache = new Dictionary<Tuple<string, string>, double>();
+
+		//private double GetTotalSumForP2(string wordminus2, string wordminus1)
+		//{
+		//	// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
+		//	var tuple = new Tuple<string, string>(wordminus2, wordminus1);
+		//	double totalSum;
+		//	if (_totalSumForP2Cache.TryGetValue(tuple, out totalSum))
+		//	{
+		//		return totalSum;
+		//	}
+
+		//	totalSum = 0;
+		//	for (int i = 0; i < _result.UniqueWords.Count; i++)
+		//	{
+		//		var wordIteration = _result.UniqueWords.Keys.ElementAt(i);
+		//		if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P2)
+		//		{
+		//			totalSum += P2(wordminus2, wordminus1, wordIteration);
+		//		}
+		//	}
+
+		//	_totalSumForP2Cache[tuple] = totalSum;
+
+		//	return totalSum;
+		//}
+
+		//private readonly Dictionary<Tuple<string, string>, double> _totalSumForP3Cache = new Dictionary<Tuple<string, string>, double>();
+
+		//private double GetTotalSumForP3(string wordminus2, string wordminus1)
+		//{
+		//	// Try to get the total sum from the cache. If not, then calculate it and add it to the cache
+		//	var tuple = new Tuple<string, string>(wordminus2, wordminus1);
+		//	double totalSum;
+		//	if (_totalSumForP3Cache.TryGetValue(tuple, out totalSum))
+		//	{
+		//		return totalSum;
+		//	}
+
+		//	totalSum = 0;
+		//	for (int i = 0; i < _result.UniqueWords.Count; i++)
+		//	{
+		//		var wordIteration = _result.UniqueWords.Keys.ElementAt(i);
+		//		if (DeterminePBucket(wordminus2, wordminus1, wordIteration) == PBucket.P3)
+		//		{
+		//			totalSum += P3(wordminus2, wordminus1, wordIteration);
+		//		}
+		//	}
+
+		//	_totalSumForP3Cache[tuple] = totalSum;
+
+		//	return totalSum;
+		//}
+
+		//public double P2(string wordminus2, string wordminus1, string word)
+		//{
+		//	double pmlBigramAbove = _result.Pml(wordminus1, word);
+
+		//	var sumBelow = SumForP2Factor(wordminus2, wordminus1);
+
+		//	return pmlBigramAbove / sumBelow;
+		//}
+
+		//private readonly Dictionary<Tuple<string, string>, double> _sumForP2FactorCache = new Dictionary<Tuple<string, string>, double>(); 
+
+		//private double SumForP2Factor(string wordminus2, string wordminus1)
+		//{
+		//	double sumBelow;
+		//	var key = new Tuple<string, string>(wordminus2, wordminus1);
+		//	if (_sumForP2FactorCache.TryGetValue(key, out sumBelow))
+		//	{
+		//		return sumBelow;
+		//	}
+
+		//	sumBelow = 0;
+		//	// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+		//	foreach (var wordWithoutTrigram in GetBigramsWithoutTrigrams(wordminus2, wordminus1))
+		//	{
+		//		sumBelow += _result.Pml(wordminus1, wordWithoutTrigram);
+		//	}
+
+		//	_sumForP2FactorCache[key] = sumBelow;
+
+		//	return sumBelow;
+		//}
+
+		//private Dictionary<Tuple<string, string>, List<string>> _bigramsWithoutBigrams = new Dictionary<Tuple<string, string>, List<string>>();
+
+		//private List<string> GetBigramsWithoutTrigrams(string wordminus2, string wordminus1)
+		//{
+		//	List<string> wordsWithoutTrigrams;
+		//	//var key = new Tuple<string, string>(wordminus2, wordminus1);
+		//	//if (_bigramsWithoutBigrams.TryGetValue(key, out wordsWithoutTrigrams))
+		//	//{
+		//	//	return wordsWithoutTrigrams;
+		//	//}
+
+		//	wordsWithoutTrigrams = new List<string>();
+
+		//	// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+		//	foreach (string potentialWordWithoutBigram in _result.UniqueWords.Keys)
+		//	{
+		//		if (_result.GetCountForTrigram(wordminus2, wordminus1, potentialWordWithoutBigram) == 0)
+		//		{
+		//			wordsWithoutTrigrams.Add(potentialWordWithoutBigram);
+		//		}
+		//	}
+
+		//	//_bigramsWithoutBigrams[key] = wordsWithoutTrigrams;
+
+		//	return wordsWithoutTrigrams;
+		//}
+
+		//public double P3(string wordminus2, string wordminus1, string word)
+		//{
+		//	double pmlBigramAbove = _result.Pml(word);
+
+		//	var sumBelow = SumForP3Factor(wordminus1);
+
+		//	return pmlBigramAbove / sumBelow;
+		//}
+
+		//private readonly Dictionary<string, double> _sumForP3FactorCache = new Dictionary<string, double>(); 
+
+		//private double SumForP3Factor(string wordminus1)
+		//{
+		//	double sumBelow;
+		//	var key = wordminus1;
+		//	if (_sumForP3FactorCache.TryGetValue(key, out sumBelow))
+		//	{
+		//		return sumBelow;
+		//	}
+
+		//	sumBelow = 0;
+		//	// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+		//	foreach (var wordWithoutBigram in GetUnigramsWithoutBigrams(wordminus1))
+		//	{
+		//		sumBelow += _result.Pml(wordWithoutBigram);
+		//	}
+
+		//	_sumForP3FactorCache[key] = sumBelow;
+
+		//	return sumBelow;
+		//}
+
+		//private Dictionary<string, List<string>> _unigramsWithoutBigrams = new Dictionary<string, List<string>>();
+
+		//private List<string> GetUnigramsWithoutBigrams(string wordminus1)
+		//{
+		//	List<string> wordsWithoutBigrams;
+		//	//var key = wordminus1;
+		//	//if (_unigramsWithoutBigrams.TryGetValue(wordminus1, out wordsWithoutBigrams))
+		//	//{
+		//	//	return wordsWithoutBigrams;
+		//	//}
+
+		//	wordsWithoutBigrams = new List<string>();
+
+		//	// Iterate summing everything in "B(wi-1)", which is all the words that DON'T have bigrams with wi-1
+		//	foreach (var potentialWordWithoutBigram in _result.UniqueWords.Keys)
+		//	{
+		//		if (_result.GetCountForBigram(wordminus1, potentialWordWithoutBigram) == 0)
+		//		{
+		//			wordsWithoutBigrams.Add(potentialWordWithoutBigram);
+		//		}
+		//	}
+
+		//	//_unigramsWithoutBigrams[key] = wordsWithoutBigrams;
+
+		//	return wordsWithoutBigrams;
+		//}
 
 		public string GetModelName()
 		{

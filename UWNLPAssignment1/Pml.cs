@@ -32,5 +32,13 @@
 
 			return 1.0 * countForTrigram / countForBigram;
 		}
+
+		public static double PmlRedefined(this CorpusParsingResult result, string wordminus1, string word)
+		{
+			double countForTrigram = result.GetCountForBigram(wordminus1, word) - Configs.Beta;
+			int countForBigram = result.GetCountForUnigram(wordminus1);
+
+			return 1.0 * countForTrigram / countForBigram;
+		}
 	}
 }

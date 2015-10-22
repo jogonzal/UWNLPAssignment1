@@ -27,5 +27,10 @@
 		/// The "expected" percentage of unks in the test model
 		/// </summary>
 		public const double PercentageOfUnks = 0.1;
+
+		/// <summary>
+		/// The number of times we'll compensate (bonus)
+		/// </summary>
+		public const int X = 10;
 	}
 }

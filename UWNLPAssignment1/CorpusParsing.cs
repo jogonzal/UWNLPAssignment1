@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace UWNLPAssignment1
 {
@@ -63,9 +64,23 @@ namespace UWNLPAssignment1
 
 	public static class CorpusParsing
 	{
-		public static CorpusParsingResult ParseCorpus(ReadCorpusResult readCorpus, bool unkEnabled)
+		public static CorpusParsingResult ParseCorpus(ReadCorpusResult readCorpus, bool unkEnabled, string postTrainWith = null)
 		{
-			StringParsingResult parsingResult = ParseString(readCorpus.Training);
+			// If we have a post training corpus, then use it several times (count it more than original training)
+			StringParsingResult parsingResult;
+			if (postTrainWith != null)
+			{
+				StringBuilder sb = new StringBuilder(readCorpus.Training);
+				for (int i = 0; i < Configs.X; i++)
+				{
+					sb.Append(postTrainWith);
+				}
+				parsingResult = ParseString(sb.ToString());
+			}
+			else
+			{
+				parsingResult = ParseString(readCorpus.Training);
+			}
 
 			if (unkEnabled)
 			{
@@ -174,8 +189,13 @@ namespace UWNLPAssignment1
 
 		public static StringParsingResult ParseString(string corpus)
 		{
-			// Make everything lowercase
-			corpus = corpus.ToLowerInvariant();
+			// Make everything lowercase + give spaces to punctuation symbols to allow for them to form unique words
+			StringBuilder sb = new StringBuilder(corpus);
+			sb.Replace(",", " , ");
+			sb.Replace(";", " ; ");
+			sb.Replace(":", " : ");
+			sb.Replace("-", " - ");
+			corpus = sb.ToString().ToLowerInvariant();
 
 			var uniqueWords = new Dictionary<string, int>();
 			String[] sentenceStrings = corpus.Split(new[] { '.', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);

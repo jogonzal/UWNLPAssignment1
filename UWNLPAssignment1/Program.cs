@@ -7,33 +7,51 @@ namespace UWNLPAssignment1
 	{
 		static void Main(string[] args)
 		{
-			EvaliateProblem1ModelOnAll3Corpora();
+			PrintInstructions();
 
+			int option;
+			while (!int.TryParse(Console.ReadLine(), out option) || option < 1 || option > 5)
+			{
+				Console.WriteLine("Invalid option!");
+				PrintInstructions();
+			}
+
+			switch (option)
+			{
+				case 1:
+					EvaluateProblem1ModelOnAll3Corpora();
+					break;
+				case 2:
+					EvaluateLinearModelOnAll3Corpora();
+					break;
+				case 3:
+					FindBestLambdasForLinearModel();
+					break;
+				case 4:
+					EvaluateCrossDomainPerplexitiesOnLinearModel();
+					break;
+				case 5:
+					BonusQuestion();
+					break;
+			}
+
+			Console.WriteLine("Done! Yay!");
 			Console.ReadLine();
 		}
 
-		#region Problem1 model
-
-		private static void EvaliateProblem1ModelOnAll3Corpora()
+		private static void PrintInstructions()
 		{
-			ReadCorpusResult brownReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
-			ReadCorpusResult gutenbergResults = ReadCorpusFile.Read(RealCorpus.Gutenberg);
-			ReadCorpusResult reutersResults = ReadCorpusFile.Read(RealCorpus.Reuters);
-
-			CorpusParsingResult brownCorpus = CorpusParsing.ParseCorpus(brownReadResults, true);
-			CorpusParsingResult gutenbergCorpus = CorpusParsing.ParseCorpus(gutenbergResults, true);
-			CorpusParsingResult reutersCorpus = CorpusParsing.ParseCorpus(reutersResults, true);
-
-			CalculateProblem1ModelPerplexityOnTestCorpus(brownCorpus, brownReadResults, false);
-			CalculateProblem1ModelPerplexityOnTestCorpus(gutenbergCorpus, gutenbergResults, false);
-			CalculateProblem1ModelPerplexityOnTestCorpus(reutersCorpus, reutersResults, false);
+			Console.WriteLine("Options:");
+			Console.WriteLine("1\tProblem2.Question1: Evaluate Problem1Model on all 3 corpora");
+			Console.WriteLine("2\tProblem2.Question2: Evaluate linear model on all 3 corpora");
+			Console.WriteLine("3\tProblem2.Question4: Find best lambdas for linear model");
+			Console.WriteLine("4\tProblem2.Question5: Perplexities on cross domain");
+			Console.WriteLine("5\tBONUS: Modify model based on small fraction of target domain");
 		}
-
-		#endregion
 
 		#region Linear Model
 
-		private static void EvaluatePerplexitiesOnTrainTestCombinations()
+		private static void EvaluateCrossDomainPerplexitiesOnLinearModel()
 		{
 			ReadCorpusResult brownReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
 			ReadCorpusResult gutenbergResults = ReadCorpusFile.Read(RealCorpus.Gutenberg);
@@ -82,7 +100,7 @@ namespace UWNLPAssignment1
 			new Tuple<double, double, double>(0.1, 0.1, 0.8),
 		};
 
-		private static void RunSeveralLinearModels()
+		private static void FindBestLambdasForLinearModel()
 		{
 			ReadCorpusResult brownReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
 			ReadCorpusResult gutenbergResults = ReadCorpusFile.Read(RealCorpus.Gutenberg);
@@ -130,8 +148,6 @@ namespace UWNLPAssignment1
 			Console.WriteLine("Running linear model with properties {0} {1} {2}", Configs.Lambda1, Configs.Lambda2, Configs.Lambda3);
 		}
 
-		#endregion
-
 		private static double CalculateLinearModelPerplexityOnTestCorpus(CorpusParsingResult trainingCorpus, ReadCorpusResult evaluatingCorpus, bool development)
 		{
 			Console.WriteLine("Calculating Perplexity after training on {0}", trainingCorpus.CorpusName);
@@ -142,12 +158,30 @@ namespace UWNLPAssignment1
 			ILanguageModel model = new LinearModel(trainingCorpus);
 			Console.WriteLine("{0}\tModel", model.GetModelName());
 			StringParsingResult testCorpus = CorpusParsing.ParseString(development ? evaluatingCorpus.Development : evaluatingCorpus.Evaluation);
-			double perplexity = Perplexity.CalculatePerplexity(model, trainingCorpus, testCorpus);
+			double perplexity = CalculatePerplexityWrapper(model, trainingCorpus, testCorpus);
 
-			Console.WriteLine("{0}\tPerplexity", perplexity);
 			Console.WriteLine("============================================================");
 
 			return perplexity;
+		}
+
+		#endregion
+
+		#region Problem1Model
+
+		private static void EvaluateProblem1ModelOnAll3Corpora()
+		{
+			ReadCorpusResult brownReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
+			ReadCorpusResult gutenbergResults = ReadCorpusFile.Read(RealCorpus.Gutenberg);
+			ReadCorpusResult reutersResults = ReadCorpusFile.Read(RealCorpus.Reuters);
+
+			CorpusParsingResult brownCorpus = CorpusParsing.ParseCorpus(brownReadResults, true);
+			CorpusParsingResult gutenbergCorpus = CorpusParsing.ParseCorpus(gutenbergResults, true);
+			CorpusParsingResult reutersCorpus = CorpusParsing.ParseCorpus(reutersResults, true);
+
+			CalculateProblem1ModelPerplexityOnTestCorpus(brownCorpus, brownReadResults, false);
+			CalculateProblem1ModelPerplexityOnTestCorpus(gutenbergCorpus, gutenbergResults, false);
+			CalculateProblem1ModelPerplexityOnTestCorpus(reutersCorpus, reutersResults, false);
 		}
 
 		private static double CalculateProblem1ModelPerplexityOnTestCorpus(CorpusParsingResult trainingCorpus, ReadCorpusResult evaluatingCorpus, bool development)
@@ -160,12 +194,39 @@ namespace UWNLPAssignment1
 			ILanguageModel model = new Problem1Model(trainingCorpus);
 			Console.WriteLine("{0}\tModel", model.GetModelName());
 			StringParsingResult testCorpus = CorpusParsing.ParseString(development ? evaluatingCorpus.Development : evaluatingCorpus.Evaluation);
-			double perplexity = Perplexity.CalculatePerplexity(model, trainingCorpus, testCorpus);
+			double perplexity = CalculatePerplexityWrapper(model, trainingCorpus, testCorpus);
 
-			Console.WriteLine("{0}\tPerplexity", perplexity);
 			Console.WriteLine("============================================================");
 
 			return perplexity;
+		}
+
+		#endregion
+
+		private static double CalculatePerplexityWrapper(ILanguageModel model, CorpusParsingResult trainingCorpus, StringParsingResult testCorpus)
+		{
+			Perplexity.TestStats testStats;
+			double perplexity = Perplexity.CalculatePerplexity(model, trainingCorpus, testCorpus, out testStats);
+
+			Console.WriteLine("{0}\tPerplexity", perplexity);
+			Console.WriteLine("Test stats:");
+			Console.WriteLine(testStats.ToString());
+			return perplexity;
+		}
+
+		private static void BonusQuestion()
+		{
+			ReadCorpusResult brownReadResults = ReadCorpusFile.Read(RealCorpus.Brown);
+			ReadCorpusResult gutenbergResults = ReadCorpusFile.Read(RealCorpus.Gutenberg);
+			ReadCorpusResult reutersResults = ReadCorpusFile.Read(RealCorpus.Reuters);
+
+			CorpusParsingResult brownCorpus = CorpusParsing.ParseCorpus(brownReadResults, true, postTrainWith: reutersResults.Development.Substring(0, reutersResults.Development.Length / 10));
+			CorpusParsingResult gutenbergCorpus = CorpusParsing.ParseCorpus(gutenbergResults, true, postTrainWith: brownReadResults.Development.Substring(0, brownReadResults.Development.Length / 10));
+			CorpusParsingResult reutersCorpus = CorpusParsing.ParseCorpus(reutersResults, true, postTrainWith: gutenbergResults.Development.Substring(0, gutenbergResults.Development.Length / 10));
+
+			CalculateLinearModelPerplexityOnTestCorpus(gutenbergCorpus, brownReadResults, false);
+			CalculateLinearModelPerplexityOnTestCorpus(reutersCorpus, gutenbergResults, false);
+			CalculateLinearModelPerplexityOnTestCorpus(brownCorpus, reutersResults, false);
 		}
 	}
 }
