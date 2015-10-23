@@ -61,6 +61,10 @@ namespace UWNLPAssignment1
 			CorpusParsingResult gutenbergCorpus = CorpusParsing.ParseCorpus(gutenbergResults, true);
 			CorpusParsingResult reutersCorpus = CorpusParsing.ParseCorpus(reutersResults, true);
 
+			Console.WriteLine(brownCorpus.GetTopBigrams());
+			Console.WriteLine(gutenbergCorpus.GetTopBigrams());
+			Console.WriteLine(reutersCorpus.GetTopBigrams());
+
 			CalculateLinearModelPerplexityOnTestCorpus(gutenbergCorpus, brownReadResults, false);
 			CalculateLinearModelPerplexityOnTestCorpus(reutersCorpus, gutenbergResults, false);
 			CalculateLinearModelPerplexityOnTestCorpus(brownCorpus, reutersResults, false);

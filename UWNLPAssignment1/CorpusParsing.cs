@@ -51,6 +51,21 @@ namespace UWNLPAssignment1
 		public int TotalTrigrams { get; set; }
 
 		public RealCorpus CorpusName { get; set; }
+
+		internal string GetTopBigrams()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendFormat("PRINTING TOP BIGRAMS FOR {0}{1}", CorpusName, Environment.NewLine);
+
+			var top11 = Bigrams.OrderByDescending(k => k.Value).Take(11);
+			foreach (var top in top11)
+			{
+				sb.AppendFormat("{0}\t{1}\t{2}{3}", top.Key.Item1, top.Key.Item2, top.Value, Environment.NewLine);
+			}
+
+			sb.AppendLine();
+			return sb.ToString();
+		}
 	}
 
 	public class StringParsingResult
@@ -195,6 +210,7 @@ namespace UWNLPAssignment1
 			sb.Replace(";", " ; ");
 			sb.Replace(":", " : ");
 			sb.Replace("-", " - ");
+			sb.Replace("\r", " ");
 			corpus = sb.ToString().ToLowerInvariant();
 
 			var uniqueWords = new Dictionary<string, int>();
